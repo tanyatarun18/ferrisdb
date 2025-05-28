@@ -9,9 +9,10 @@
 ## Documentation
 - [x] Add module-level documentation comments
 - [x] Document public APIs with examples
-- [ ] Add more comprehensive examples in doc comments
-- [ ] Generate and review cargo doc output
+- [x] Add comprehensive examples in doc comments
+- [x] Generate and review cargo doc output
 - [ ] Add architecture diagrams in documentation
+- [ ] Create rustdoc book with mdBook integration
 
 ## Storage Engine
 - [x] Implement Write-Ahead Log (WAL)

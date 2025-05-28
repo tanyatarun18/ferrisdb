@@ -2,15 +2,47 @@ use ferrisdb_core::{Key, Value, Operation, Timestamp, Result, Error};
 use bytes::{Buf, BufMut, BytesMut};
 use crc32fast::Hasher;
 
+/// An entry in the Write-Ahead Log
+/// 
+/// Each entry represents a single operation (Put or Delete) with its
+/// associated key, value, and timestamp. Entries are encoded in a binary
+/// format with checksums for corruption detection.
+/// 
+/// # Binary Format
+/// 
+/// ```text
+/// +------------+------------+------------+-------+----------+
+/// | Length(4B) | CRC32(4B)  | Time(8B)   | Op(1B)| Key Len(4B)|
+/// +------------+------------+------------+-------+----------+
+/// | Key(var)   | Val Len(4B)| Value(var) |
+/// +------------+------------+------------+
+/// ```
 #[derive(Debug, Clone, PartialEq, Eq)]
 pub struct WALEntry {
+    /// Timestamp when this operation occurred
     pub timestamp: Timestamp,
+    /// Type of operation (Put or Delete)
     pub operation: Operation,
+    /// The key being operated on
     pub key: Key,
+    /// The value (empty for Delete operations)
     pub value: Value,
 }
 
 impl WALEntry {
+    /// Creates a new Put entry
+    /// 
+    /// # Example
+    /// 
+    /// ```
+    /// use ferrisdb_storage::wal::WALEntry;
+    /// 
+    /// let entry = WALEntry::new_put(
+    ///     b"user:123".to_vec(),
+    ///     b"John Doe".to_vec(),
+    ///     12345
+    /// );
+    /// ```
     pub fn new_put(key: Key, value: Value, timestamp: Timestamp) -> Self {
         Self {
             timestamp,
@@ -20,6 +52,15 @@ impl WALEntry {
         }
     }
     
+    /// Creates a new Delete entry
+    /// 
+    /// # Example
+    /// 
+    /// ```
+    /// use ferrisdb_storage::wal::WALEntry;
+    /// 
+    /// let entry = WALEntry::new_delete(b"user:123".to_vec(), 12346);
+    /// ```
     pub fn new_delete(key: Key, timestamp: Timestamp) -> Self {
         Self {
             timestamp,
@@ -29,6 +70,10 @@ impl WALEntry {
         }
     }
     
+    /// Encodes the entry into binary format with checksum
+    /// 
+    /// The encoded format includes a CRC32 checksum to detect corruption.
+    /// All integers are encoded in little-endian format.
     pub fn encode(&self) -> Vec<u8> {
         let mut buf = BytesMut::new();
         
@@ -62,6 +107,17 @@ impl WALEntry {
         buf.to_vec()
     }
     
+    /// Decodes an entry from binary format
+    /// 
+    /// Verifies the checksum and returns an error if corruption is detected.
+    /// 
+    /// # Errors
+    /// 
+    /// Returns `Error::Corruption` if:
+    /// - The data is too small
+    /// - The length doesn't match
+    /// - The checksum is invalid
+    /// - The operation type is unknown
     pub fn decode(data: &[u8]) -> Result<Self> {
         if data.len() < 8 {
             return Err(Error::Corruption("WAL entry too small".to_string()));

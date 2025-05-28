@@ -7,6 +7,34 @@ use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
 use parking_lot::Mutex;
 
+/// Writer for the Write-Ahead Log
+/// 
+/// The WALWriter appends entries to a log file with configurable durability
+/// guarantees. It tracks the file size and returns an error when the size
+/// limit is reached, indicating that rotation is needed.
+/// 
+/// # Thread Safety
+/// 
+/// The writer is thread-safe and can be shared across multiple threads.
+/// Internal locking ensures that entries are written atomically.
+/// 
+/// # Example
+/// 
+/// ```no_run
+/// use ferrisdb_storage::wal::{WALWriter, WALEntry};
+/// use ferrisdb_core::SyncMode;
+/// 
+/// let writer = WALWriter::new(
+///     "path/to/wal.log",
+///     SyncMode::Normal,
+///     64 * 1024 * 1024  // 64MB
+/// )?;
+/// 
+/// let entry = WALEntry::new_put(b"key".to_vec(), b"value".to_vec(), 1);
+/// writer.append(&entry)?;
+/// writer.sync()?;
+/// # Ok::<(), ferrisdb_core::Error>(())
+/// ```
 pub struct WALWriter {
     file: Arc<Mutex<BufWriter<File>>>,
     path: PathBuf,
@@ -16,6 +44,17 @@ pub struct WALWriter {
 }
 
 impl WALWriter {
+    /// Creates a new WAL writer
+    /// 
+    /// # Arguments
+    /// 
+    /// * `path` - Path to the WAL file
+    /// * `sync_mode` - Durability level for writes
+    /// * `size_limit` - Maximum file size before rotation is needed
+    /// 
+    /// # Errors
+    /// 
+    /// Returns an error if the file cannot be created or opened.
     pub fn new(path: impl AsRef<Path>, sync_mode: SyncMode, size_limit: u64) -> Result<Self> {
         let path = path.as_ref().to_path_buf();
         std::fs::create_dir_all(path.parent().unwrap())?;
@@ -37,6 +76,16 @@ impl WALWriter {
         })
     }
     
+    /// Appends an entry to the WAL
+    /// 
+    /// The entry is encoded and written to the file. Depending on the
+    /// sync mode, the data may be flushed to the OS or synced to disk.
+    /// 
+    /// # Errors
+    /// 
+    /// Returns an error if:
+    /// - The entry would exceed the size limit
+    /// - An I/O error occurs during write
     pub fn append(&self, entry: &WALEntry) -> Result<()> {
         let encoded = entry.encode();
         let entry_size = encoded.len() as u64;
@@ -64,6 +113,10 @@ impl WALWriter {
         Ok(())
     }
     
+    /// Forces a sync of all buffered data to disk
+    /// 
+    /// This ensures durability by flushing the buffer and calling
+    /// fsync on the underlying file.
     pub fn sync(&self) -> Result<()> {
         let mut file = self.file.lock();
         file.flush()?;
@@ -71,10 +124,12 @@ impl WALWriter {
         Ok(())
     }
     
+    /// Returns the current size of the WAL file
     pub fn size(&self) -> u64 {
         self.size.load(Ordering::Relaxed)
     }
     
+    /// Returns the path to the WAL file
     pub fn path(&self) -> &Path {
         &self.path
     }

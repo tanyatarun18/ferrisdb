@@ -4,11 +4,41 @@ use std::fs::File;
 use std::io::{BufReader, Read};
 use std::path::Path;
 
+/// Reader for the Write-Ahead Log
+/// 
+/// The WALReader reads entries from a WAL file sequentially. It verifies
+/// checksums and handles partial entries at the end of the file (which may
+/// occur if the process crashed during a write).
+/// 
+/// # Example
+/// 
+/// ```no_run
+/// use ferrisdb_storage::wal::WALReader;
+/// 
+/// let mut reader = WALReader::new("path/to/wal.log")?;
+/// 
+/// // Read all entries
+/// let entries = reader.read_all()?;
+/// 
+/// // Or iterate through entries
+/// for entry in reader {
+///     match entry {
+///         Ok(entry) => println!("Entry: {:?}", entry),
+///         Err(e) => eprintln!("Error: {}", e),
+///     }
+/// }
+/// # Ok::<(), ferrisdb_core::Error>(())
+/// ```
 pub struct WALReader {
     reader: BufReader<File>,
 }
 
 impl WALReader {
+    /// Creates a new WAL reader
+    /// 
+    /// # Errors
+    /// 
+    /// Returns an error if the file cannot be opened.
     pub fn new(path: impl AsRef<Path>) -> Result<Self> {
         let file = File::open(path)?;
         Ok(Self {
@@ -16,6 +46,16 @@ impl WALReader {
         })
     }
     
+    /// Reads the next entry from the WAL
+    /// 
+    /// Returns `Ok(None)` when the end of file is reached.
+    /// 
+    /// # Errors
+    /// 
+    /// Returns an error if:
+    /// - An I/O error occurs
+    /// - Corruption is detected (checksum mismatch)
+    /// - The entry format is invalid
     pub fn read_entry(&mut self) -> Result<Option<WALEntry>> {
         // Read length
         let mut length_buf = [0u8; 4];
@@ -35,6 +75,10 @@ impl WALReader {
         Ok(Some(WALEntry::decode(&data)?))
     }
     
+    /// Reads all remaining entries from the WAL
+    /// 
+    /// This is useful for recovery, where all entries need to be
+    /// replayed to reconstruct the state.
     pub fn read_all(&mut self) -> Result<Vec<WALEntry>> {
         let mut entries = Vec::new();
         while let Some(entry) = self.read_entry()? {
