@@ -1,0 +1,26 @@
+[package]
+name = "ferrisdb"
+version = "0.1.0"
+edition = "2021"
+authors = ["FerrisDB Contributors"]
+license = "MIT"
+description = "A distributed, transactional key-value database inspired by FoundationDB"
+
+[workspace]
+members = [
+    "ferrisdb-core",
+    "ferrisdb-client",
+    "ferrisdb-server",
+]
+
+[dependencies]
+tokio = { version = "1.40", features = ["full"] }
+async-trait = "0.1"
+serde = { version = "1.0", features = ["derive"] }
+bincode = "1.3"
+log = "0.4"
+env_logger = "0.11"
+
+[dev-dependencies]
+criterion = "0.5"
+proptest = "1.5"
