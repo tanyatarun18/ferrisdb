@@ -1,3 +1,11 @@
+//! Lock-free skip list implementation for the MemTable
+//! 
+//! This module implements a concurrent skip list that supports:
+//! - Lock-free reads using epoch-based memory reclamation
+//! - Concurrent writes with fine-grained locking
+//! - Multiple versions of the same key (MVCC)
+//! - Efficient range scans
+
 use ferrisdb_core::{Key, Value, Operation, Timestamp};
 use std::cmp::Ordering;
 use std::sync::atomic::{AtomicUsize, Ordering as AtomicOrdering};
@@ -6,21 +14,40 @@ use crossbeam::epoch::{self, Atomic, Guard, Owned, Shared};
 use parking_lot::Mutex;
 use rand::Rng;
 
+/// Maximum height of the skip list (affects memory usage and performance)
 const MAX_HEIGHT: usize = 12;
+
+/// Probability factor for determining node height (1/4 chance of increasing height)
 const BRANCHING_FACTOR: u32 = 4;
 
+/// Internal key representation that includes metadata for MVCC
+/// 
+/// Keys in the skip list are ordered first by user key (ascending),
+/// then by timestamp (descending). This ensures that:
+/// - Keys are grouped together
+/// - Newer versions appear before older versions
+/// - Range scans are efficient
 #[derive(Debug, Clone)]
 pub struct InternalKey {
+    /// The actual user-provided key
     pub user_key: Key,
+    /// Timestamp for MVCC versioning
     pub timestamp: Timestamp,
+    /// Operation type (Put or Delete)
     pub operation: Operation,
 }
 
 impl InternalKey {
+    /// Creates a new internal key
     fn new(user_key: Key, timestamp: Timestamp, operation: Operation) -> Self {
         Self { user_key, timestamp, operation }
     }
     
+    /// Compares two internal keys for ordering
+    /// 
+    /// Keys are ordered by:
+    /// 1. User key (ascending)
+    /// 2. Timestamp (descending) - newer versions first
     fn compare(&self, other: &Self) -> Ordering {
         match self.user_key.cmp(&other.user_key) {
             Ordering::Equal => {
@@ -35,13 +62,22 @@ impl InternalKey {
     }
 }
 
+/// A node in the skip list
+/// 
+/// Each node contains a key-value pair and pointers to the next node
+/// at each level of the skip list. The height of a node determines
+/// how many levels it participates in.
 struct Node {
+    /// The key with version information
     key: InternalKey,
+    /// The value associated with this key version
     value: Value,
+    /// Next pointers for each level (height determines the vector length)
     next: Vec<Atomic<Node>>,
 }
 
 impl Node {
+    /// Creates a new node with the specified height
     fn new(key: InternalKey, value: Value, height: usize) -> Self {
         let mut next = Vec::with_capacity(height);
         for _ in 0..height {
@@ -51,6 +87,9 @@ impl Node {
         Self { key, value, next }
     }
     
+    /// Creates a sentinel head node for the skip list
+    /// 
+    /// The head node has an empty key that compares less than all other keys
     fn head(height: usize) -> Self {
         Self::new(
             InternalKey::new(Vec::new(), 0, Operation::Put),
@@ -60,14 +99,37 @@ impl Node {
     }
 }
 
+/// A concurrent skip list for storing versioned key-value pairs
+/// 
+/// This skip list implementation provides:
+/// - O(log n) expected time for search, insert, and delete
+/// - Lock-free reads using epoch-based memory reclamation
+/// - Support for multiple versions of the same key
+/// - Efficient range scans
+/// 
+/// # Thread Safety
+/// 
+/// Multiple threads can read concurrently without locking. Writes use
+/// fine-grained locking to allow concurrent modifications to different
+/// parts of the list.
+/// 
+/// # Memory Management
+/// 
+/// Uses crossbeam's epoch-based memory reclamation to safely free
+/// nodes that are no longer reachable, avoiding the ABA problem.
 pub struct SkipList {
+    /// Sentinel head node
     head: Atomic<Node>,
+    /// Current height of the skip list
     height: AtomicUsize,
+    /// Number of entries in the skip list
     size: AtomicUsize,
+    /// Random number generator for determining node heights
     rng: Mutex<rand::rngs::ThreadRng>,
 }
 
 impl SkipList {
+    /// Creates a new empty skip list
     pub fn new() -> Self {
         let head = Node::head(MAX_HEIGHT);
         
@@ -79,6 +141,10 @@ impl SkipList {
         }
     }
     
+    /// Generates a random height for a new node
+    /// 
+    /// Uses geometric distribution with p = 1/4 to determine height.
+    /// This gives expected height of 1.33 and keeps the skip list balanced.
     fn random_height(&self) -> usize {
         let mut height = 1;
         let mut rng = self.rng.lock();
@@ -90,6 +156,18 @@ impl SkipList {
         height
     }
     
+    /// Inserts a new key-value pair with version information
+    /// 
+    /// This operation is thread-safe and uses compare-and-swap operations
+    /// to ensure consistency. If the same key with the same timestamp already
+    /// exists, it will not be updated (preserving immutability).
+    /// 
+    /// # Arguments
+    /// 
+    /// * `user_key` - The key to insert
+    /// * `value` - The value to associate with the key
+    /// * `timestamp` - Version timestamp for MVCC
+    /// * `operation` - Type of operation (Put or Delete)
     pub fn insert(&self, user_key: Key, value: Value, timestamp: Timestamp, operation: Operation) {
         let guard = &epoch::pin();
         let key = InternalKey::new(user_key, timestamp, operation);
@@ -170,6 +248,22 @@ impl SkipList {
         }
     }
     
+    /// Finds the predecessors and successors for a key at each level
+    /// 
+    /// This is the core search operation used by insert and delete.
+    /// It populates the `preds` and `succs` arrays with the nodes
+    /// before and after where the key would be inserted at each level.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `key` - The key to search for
+    /// * `preds` - Array to fill with predecessor nodes at each level
+    /// * `succs` - Array to fill with successor nodes at each level
+    /// * `guard` - Epoch guard for safe memory access
+    /// 
+    /// # Returns
+    /// 
+    /// `true` if an exact match for the key is found, `false` otherwise
     fn find<'g>(
         &self,
         key: &InternalKey,
@@ -203,6 +297,22 @@ impl SkipList {
         !succs[0].is_null() && unsafe { succs[0].as_ref() }.unwrap().key.compare(key) == Ordering::Equal
     }
     
+    /// Retrieves the value for a key at a specific timestamp
+    /// 
+    /// Returns the most recent version of the key that has a timestamp
+    /// less than or equal to the given timestamp. This enables MVCC
+    /// by allowing reads at different points in time.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `user_key` - The key to look up
+    /// * `timestamp` - The timestamp to read at
+    /// 
+    /// # Returns
+    /// 
+    /// `Some((value, operation))` if the key exists at the given timestamp,
+    /// where operation indicates if this is a Put or Delete.
+    /// `None` if the key doesn't exist or all versions are newer than the timestamp.
     pub fn get(&self, user_key: &[u8], timestamp: Timestamp) -> Option<(Value, Operation)> {
         let guard = &epoch::pin();
         
@@ -233,6 +343,23 @@ impl SkipList {
         None
     }
     
+    /// Performs a range scan between start_key and end_key at a specific timestamp
+    /// 
+    /// Returns all key-value pairs where the key is in the range [start_key, end_key)
+    /// and the timestamp is less than or equal to the given timestamp. For keys with
+    /// multiple versions, only the most recent valid version is returned.
+    /// 
+    /// Delete operations (tombstones) are filtered out from the results.
+    /// 
+    /// # Arguments
+    /// 
+    /// * `start_key` - The inclusive lower bound of the range
+    /// * `end_key` - The exclusive upper bound of the range
+    /// * `timestamp` - The timestamp to read at
+    /// 
+    /// # Returns
+    /// 
+    /// A vector of (key, value) pairs in ascending key order
     pub fn scan(&self, start_key: &[u8], end_key: &[u8], timestamp: Timestamp) -> Vec<(Key, Value)> {
         let guard = &epoch::pin();
         let mut result = Vec::new();
@@ -266,6 +393,9 @@ impl SkipList {
         result
     }
     
+    /// Returns the number of entries in the skip list
+    /// 
+    /// Note: This counts all versions of all keys, not just unique keys.
     pub fn size(&self) -> usize {
         self.size.load(AtomicOrdering::Relaxed)
     }
