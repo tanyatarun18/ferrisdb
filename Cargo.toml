@@ -9,6 +9,7 @@ description = "A distributed, transactional key-value database inspired by Found
 [workspace]
 members = [
     "ferrisdb-core",
+    "ferrisdb-storage",
     "ferrisdb-client",
     "ferrisdb-server",
 ]
