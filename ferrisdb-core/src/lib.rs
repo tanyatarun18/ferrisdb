@@ -1,2 +1,5 @@
-// FerrisDB core types and traits
-// This crate will contain common types shared across all FerrisDB components
+pub mod error;
+pub mod types;
+
+pub use error::{Error, Result};
+pub use types::*;
