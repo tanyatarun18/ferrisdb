@@ -11,11 +11,11 @@ allow = [
     "BSD-3-Clause",
     "ISC",
     "Unicode-DFS-2016",
+    "Unicode-3.0",
     "Unlicense",
 ]
 
-# Deny all other licenses by default
-copyleft = "deny"
+# Confidence threshold for matching licenses
 confidence-threshold = 0.8
 
 [[licenses.exceptions]]
@@ -26,8 +26,6 @@ name = "ring"
 [bans]
 # Lint level for when multiple versions of the same crate are detected
 multiple-versions = "warn"
-# Lint level for when a crate marked as 'deny' is detected
-deny = []
 # Skip certain crates when checking for duplicates
 skip = []
 # Similarly named crates that are allowed to coexist
