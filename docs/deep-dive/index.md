@@ -23,16 +23,15 @@ Welcome to FerrisDB's technical deep dives! These articles explore fundamental d
 {: .important }
 > **Article Difficulty Levels**
 >
-> - **Beginner**: Assumes only CRUD development experience. Concepts explained with everyday analogies.
-> - **Intermediate**: Some familiarity with Rust and concurrent programming helpful. Includes more complex code examples.
-> - **Advanced**: Solid understanding of systems programming concepts required. Discusses low-level implementation details.
+> - 📗 **Beginner**: Assumes only CRUD development experience. Concepts explained with everyday analogies.
+> - 📙 **Intermediate**: Some familiarity with Rust and concurrent programming helpful. Includes more complex code examples.
+> - 📕 **Advanced**: Solid understanding of systems programming concepts required. Discusses low-level implementation details.
 
 ## Storage Engine Fundamentals
 
 ### WAL and Crash Recovery
 
-{: .label .label-green } Beginner
-{: .label .label-blue } 15 min read
+📗 **Beginner** • ⏱️ **15 min read**
 
 Understand how Write-Ahead Logs ensure data durability and enable crash recovery. Learn about FerrisDB's WAL format, checksums, and recovery process.
 
@@ -44,8 +43,7 @@ Understand how Write-Ahead Logs ensure data durability and enable crash recovery
 
 ### LSM-Trees Explained
 
-{: .label .label-yellow } Intermediate
-{: .label .label-blue } 20 min read
+📙 **Intermediate** • ⏱️ **20 min read**
 
 Discover why LSM-trees revolutionized write performance in modern databases. Explore FerrisDB's implementation from MemTables to compaction.
 
@@ -57,8 +55,7 @@ Discover why LSM-trees revolutionized write performance in modern databases. Exp
 
 ### SSTable Format Design
 
-{: .label .label-yellow } Intermediate
-{: .label .label-blue } 18 min read
+📙 **Intermediate** • ⏱️ **18 min read**
 
 Deep dive into efficient on-disk storage formats. Learn how FerrisDB organizes data for fast reads and space efficiency.
 
@@ -70,8 +67,7 @@ Deep dive into efficient on-disk storage formats. Learn how FerrisDB organizes d
 
 ### Lock-Free Skip Lists
 
-{: .label .label-red } Advanced
-{: .label .label-blue } 25 min read
+📕 **Advanced** • ⏱️ **25 min read**
 
 Explore concurrent data structures that power FerrisDB's MemTable. Understanding lock-free programming through practical implementation.
 

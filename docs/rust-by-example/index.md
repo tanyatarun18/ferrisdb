@@ -28,9 +28,9 @@ If you've built web apps, REST APIs, or worked with databases in JavaScript, Pyt
 
 ## Article Difficulty Levels
 
-- **Beginner**: First Rust concepts (ownership, borrowing, Result types). Comparisons focus on syntax differences.
-- **Intermediate**: Rust patterns and idioms (traits, generics). Comparisons include performance implications.
-- **Advanced**: Complex Rust features (lifetimes, unsafe, macros). Deep performance and memory comparisons.
+- 📗 **Beginner**: First Rust concepts (ownership, borrowing, Result types). Comparisons focus on syntax differences.
+- 📙 **Intermediate**: Rust patterns and idioms (traits, generics). Comparisons include performance implications.
+- 📕 **Advanced**: Complex Rust features (lifetimes, unsafe, macros). Deep performance and memory comparisons.
 
 ## Why Database Code?
 
@@ -62,8 +62,7 @@ Learn Rust's ownership system through data structure examples.
 
 #### [Ownership & Sharing: MemTable Lifecycle Management](/rust-by-example/ownership-memtable-sharing/)
 
-{: .label .label-green } Beginner
-{: .label .label-blue } 10 min read
+📗 **Beginner** • ⏱️ **10 min read**
 
 Understanding Rust ownership through FerrisDB's MemTable, compared with JavaScript, Python, Java, and Go.
 
