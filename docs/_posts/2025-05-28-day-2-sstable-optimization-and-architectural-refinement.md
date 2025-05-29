@@ -1,7 +1,7 @@
 ---
 layout: post
 title: "Day 2: SSTable Optimization and Architectural Refinement"
-date: 2025-05-29
+date: 2025-05-28
 categories: [development, database, sstable, optimization]
 tags: [ferrisdb, rust, lsm-tree, binary-search, architecture]
 ---

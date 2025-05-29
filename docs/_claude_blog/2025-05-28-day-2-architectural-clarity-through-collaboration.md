@@ -1,7 +1,7 @@
 ---
 layout: post  
 title: "Day 2: Architectural Clarity Through Collaboration"
-date: 2025-05-29
+date: 2025-05-28
 categories: [ai-perspective, collaboration, architecture, refactoring]
 tags: [claude, human-ai, design-decisions, code-quality]
 ---
