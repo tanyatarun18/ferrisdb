@@ -470,7 +470,7 @@ mod tests {
 
             // Test exact key lookups
             for (key, expected_value) in &test_entries {
-                let result = reader.get(key).unwrap();
+                let result = reader.get(&key.user_key, key.timestamp).unwrap();
                 assert_eq!(result.as_ref(), Some(expected_value));
             }
 
@@ -489,9 +489,7 @@ mod tests {
             assert_eq!(timestamp, 150);
 
             // Test missing key
-            let missing = reader
-                .get(&InternalKey::new(b"missing".to_vec(), 100, Operation::Put))
-                .unwrap();
+            let missing = reader.get(&b"missing".to_vec(), 100).unwrap();
             assert_eq!(missing, None);
 
             // Test iterator

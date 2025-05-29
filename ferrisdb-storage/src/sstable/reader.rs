@@ -16,14 +16,18 @@ use std::path::Path;
 /// # Example
 ///
 /// ```ignore
-/// use ferrisdb_storage::sstable::{reader::SSTableReader, InternalKey};
-/// use ferrisdb_core::Operation;
+/// use ferrisdb_storage::sstable::reader::SSTableReader;
 ///
-/// let reader = SSTableReader::open("path/to/sstable.sst")?;
+/// let mut reader = SSTableReader::open("path/to/sstable.sst")?;
 ///
-/// let key = InternalKey::new(b"key1".to_vec(), 100, Operation::Put);
-/// if let Some(value) = reader.get(&key)? {
+/// // Get exact key-timestamp match
+/// if let Some(value) = reader.get(&b"key1".to_vec(), 100)? {
 ///     println!("Found value: {:?}", value);
+/// }
+///
+/// // Get latest version of a key
+/// if let Some((value, timestamp, operation)) = reader.get_latest(&b"key1".to_vec(), 1000)? {
+///     println!("Latest value: {:?} at timestamp {}", value, timestamp);
 /// }
 /// ```
 pub struct SSTableReader {
@@ -85,22 +89,23 @@ impl SSTableReader {
         })
     }
 
-    /// Looks up a specific key in the SSTable
+    /// Looks up a specific key at a specific timestamp in the SSTable
     ///
-    /// Returns the value associated with the key, or None if the key
-    /// is not found. For MVCC, this returns the value for the exact
-    /// timestamp match.
+    /// Returns the value associated with the exact key-timestamp combination,
+    /// or None if not found. This searches for an exact match of both the
+    /// user key and timestamp.
     ///
     /// # Arguments
     ///
-    /// * `key` - The internal key to search for
+    /// * `user_key` - The user key to search for
+    /// * `timestamp` - The exact timestamp to match
     ///
     /// # Errors
     ///
     /// Returns an error if an I/O error occurs during lookup
-    pub fn get(&mut self, key: &InternalKey) -> Result<Option<Value>> {
+    pub fn get(&mut self, user_key: &Key, timestamp: Timestamp) -> Result<Option<Value>> {
         // Find the block that might contain this key
-        let block_offset = match self.find_block_for_key(&key.user_key) {
+        let block_offset = match self.find_block_for_key(user_key) {
             Some(offset) => offset,
             None => return Ok(None), // Key is outside the range of this SSTable
         };
@@ -108,13 +113,13 @@ impl SSTableReader {
         // Load the block (from cache or disk)
         let entries = self.load_block(block_offset)?;
 
-        // Search within the block for exact key match
+        // Search within the block for exact key and timestamp match
         for entry in entries {
-            if entry.key == *key {
+            if entry.key.user_key == *user_key && entry.key.timestamp == timestamp {
                 return Ok(Some(entry.value.clone()));
             }
-            // Since entries are sorted, we can stop early if we've passed the key
-            if entry.key > *key {
+            // Since entries are sorted, we can stop early if we've passed the user key
+            if entry.key.user_key > *user_key {
                 break;
             }
         }
@@ -529,15 +534,18 @@ mod tests {
         let mut reader = SSTableReader::open(&path).unwrap();
 
         // Test exact key lookups
-        let result = reader.get(&test_data[0].0).unwrap();
+        let result = reader.get(&test_data[0].0.user_key, test_data[0].0.timestamp).unwrap();
         assert_eq!(result, Some(test_data[0].1.clone()));
 
-        let result = reader.get(&test_data[2].0).unwrap();
+        let result = reader.get(&test_data[2].0.user_key, test_data[2].0.timestamp).unwrap();
         assert_eq!(result, Some(test_data[2].1.clone()));
 
         // Test key that doesn't exist
-        let missing_key = InternalKey::new(b"missing".to_vec(), 100, Operation::Put);
-        let result = reader.get(&missing_key).unwrap();
+        let result = reader.get(&b"missing".to_vec(), 100).unwrap();
+        assert_eq!(result, None);
+
+        // Test existing key with wrong timestamp
+        let result = reader.get(&test_data[0].0.user_key, 999).unwrap();
         assert_eq!(result, None);
     }
 
