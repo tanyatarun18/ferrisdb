@@ -1,7 +1,7 @@
 ---
 layout: default
 title: "Lock-Free Skip Lists"
-parent: Deep Dives
+parent: Technical Deep Dives
 nav_order: 4
 permalink: /deep-dive/concurrent-skip-list/
 ---
@@ -56,13 +56,13 @@ Skip lists are like a subway system for your data:
 
 **Regular linked list** (local train):
 
-```
+```text
 Station1 → Station2 → Station3 → Station4 → Station5
 ```
 
 **Skip list** (express system):
 
-```
+```text
 Express:    Station1 -----------→ Station3 -----------→ Station5
 Local:      Station1 → Station2 → Station3 → Station4 → Station5
 ```

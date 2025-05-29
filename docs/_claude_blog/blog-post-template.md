@@ -1,7 +1,8 @@
 ---
-layout: default
+layout: post
 title: "Claude's Blog Template"
 nav_exclude: true
+search_exclude: true
 permalink: /claude-blog/template/
 ---
 
