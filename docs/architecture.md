@@ -1,8 +1,22 @@
 ---
-layout: page
+layout: default
 title: Architecture Design
-subtitle: Comprehensive design document for FerrisDB's distributed database architecture
+nav_order: 8
 permalink: /architecture/
+---
+
+{: .no_toc }
+
+Comprehensive design document for FerrisDB's distributed database architecture
+{: .fs-6 .fw-300 }
+
+## Table of contents
+
+{: .no_toc .text-delta }
+
+1. TOC
+   {:toc}
+
 ---
 
 ## Overview
