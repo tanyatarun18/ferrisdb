@@ -1,11 +1,14 @@
 //! SSTable reader implementation
 
-use crate::sstable::{Footer, IndexEntry, InternalKey, SSTableEntry, FOOTER_SIZE, SSTABLE_MAGIC};
+use crate::sstable::{Footer, IndexEntry, InternalKey, SSTableEntry, FOOTER_SIZE};
 use ferrisdb_core::{Error, Key, Operation, Result, Timestamp, Value};
 use std::collections::BTreeMap;
 use std::fs::File;
 use std::io::{BufReader, Read, Seek, SeekFrom};
 use std::path::Path;
+
+#[cfg(test)]
+use crate::sstable::SSTABLE_MAGIC;
 
 /// Reader for querying SSTable files
 ///
@@ -95,6 +98,12 @@ impl SSTableReader {
     /// or None if not found. This searches for an exact match of both the
     /// user key and timestamp.
     ///
+    /// # Performance
+    ///
+    /// Uses binary search based on InternalKey ordering (user_key ASC, timestamp DESC)
+    /// to directly locate the exact key-timestamp combination in O(log n) time.
+    /// This is significantly faster than linear search for blocks with many entries.
+    ///
     /// # Arguments
     ///
     /// * `user_key` - The user key to search for
@@ -113,24 +122,33 @@ impl SSTableReader {
         // Load the block (from cache or disk)
         let entries = self.load_block(block_offset)?;
 
-        // Search within the block for exact key and timestamp match
-        for entry in entries {
-            if entry.key.user_key == *user_key && entry.key.timestamp == timestamp {
-                return Ok(Some(entry.value.clone()));
+        // Create target key for binary search (Operation doesn't affect ordering)
+        let target_key =
+            InternalKey::new(user_key.clone(), timestamp, ferrisdb_core::Operation::Put);
+
+        // Use binary search to find exact key match
+        match entries.binary_search_by(|entry| entry.key.cmp(&target_key)) {
+            Ok(index) => {
+                // Found exact match
+                Ok(Some(entries[index].value.clone()))
             }
-            // Since entries are sorted, we can stop early if we've passed the user key
-            if entry.key.user_key > *user_key {
-                break;
+            Err(_) => {
+                // No exact match found
+                Ok(None)
             }
         }
-
-        Ok(None)
     }
 
     /// Finds the latest version of a user key
     ///
     /// This method searches for the most recent version of a user key
     /// (highest timestamp) that is visible to the given timestamp.
+    ///
+    /// # Performance
+    ///
+    /// Uses binary search to locate the first entry for the user key, then linear
+    /// search through versions (ordered by timestamp DESC) to find the latest
+    /// version within the timestamp limit. This is optimal for MVCC workloads.
     ///
     /// # Arguments
     ///
@@ -154,20 +172,25 @@ impl SSTableReader {
         // Load the block
         let entries = self.load_block(block_offset)?;
 
-        // Search for the latest version within the timestamp limit
-        for entry in entries {
-            if entry.key.user_key == *user_key {
-                if entry.key.timestamp <= max_timestamp {
-                    return Ok(Some((
-                        entry.value.clone(),
-                        entry.key.timestamp,
-                        entry.key.operation,
-                    )));
-                }
-                // Continue searching as there might be older versions
-            } else if entry.key.user_key > *user_key {
-                // We've passed this user key, no more versions to check
+        // Use binary search to find the first entry with matching user_key
+        let start_index = entries.partition_point(|entry| entry.key.user_key < *user_key);
+
+        // Linear search through versions (timestamp DESC) for the latest valid version
+        for i in start_index..entries.len() {
+            let entry = &entries[i];
+
+            // Stop if we've moved to a different user_key
+            if entry.key.user_key != *user_key {
                 break;
+            }
+
+            // Check if this version is within our timestamp limit
+            if entry.key.timestamp <= max_timestamp {
+                return Ok(Some((
+                    entry.value.clone(),
+                    entry.key.timestamp,
+                    entry.key.operation,
+                )));
             }
         }
 
@@ -534,10 +557,14 @@ mod tests {
         let mut reader = SSTableReader::open(&path).unwrap();
 
         // Test exact key lookups
-        let result = reader.get(&test_data[0].0.user_key, test_data[0].0.timestamp).unwrap();
+        let result = reader
+            .get(&test_data[0].0.user_key, test_data[0].0.timestamp)
+            .unwrap();
         assert_eq!(result, Some(test_data[0].1.clone()));
 
-        let result = reader.get(&test_data[2].0.user_key, test_data[2].0.timestamp).unwrap();
+        let result = reader
+            .get(&test_data[2].0.user_key, test_data[2].0.timestamp)
+            .unwrap();
         assert_eq!(result, Some(test_data[2].1.clone()));
 
         // Test key that doesn't exist
@@ -664,5 +691,50 @@ mod tests {
             .unwrap_err()
             .to_string()
             .contains("Invalid magic number"));
+    }
+
+    #[test]
+    fn test_sstable_reader_binary_search_performance() {
+        let temp_dir = TempDir::new().unwrap();
+        let path = temp_dir.path().join("large_block.sst");
+
+        // Create SSTable with many entries to force large blocks
+        let mut writer = SSTableWriter::with_block_size(&path, 8192).unwrap(); // 8KB blocks
+
+        // Add many entries to create larger blocks for testing binary search efficiency
+        for i in 0..200 {
+            let key = InternalKey::new(
+                format!("key_{:06}", i).into_bytes(),
+                i as u64,
+                Operation::Put,
+            );
+            let value = format!("value_{}", i).into_bytes();
+            writer.add(key, value).unwrap();
+        }
+
+        writer.finish().unwrap();
+
+        // Test reading from the SSTable
+        let mut reader = SSTableReader::open(&path).unwrap();
+
+        // Test lookups throughout the range to ensure binary search works correctly
+        for i in [0, 50, 100, 150, 199] {
+            let key = format!("key_{:06}", i).into_bytes();
+            let expected_value = format!("value_{}", i).into_bytes();
+
+            let result = reader.get(&key, i as u64).unwrap();
+            assert_eq!(result, Some(expected_value));
+        }
+
+        // Test get_latest functionality on the large block
+        let result = reader.get_latest(&b"key_000100".to_vec(), 1000).unwrap();
+        assert!(result.is_some());
+        let (value, timestamp, _) = result.unwrap();
+        assert_eq!(value, b"value_100".to_vec());
+        assert_eq!(timestamp, 100);
+
+        // Test non-existent key
+        let result = reader.get(&b"key_999999".to_vec(), 100).unwrap();
+        assert_eq!(result, None);
     }
 }
