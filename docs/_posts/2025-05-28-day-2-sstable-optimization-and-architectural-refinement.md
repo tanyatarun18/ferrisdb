@@ -1,9 +1,12 @@
 ---
 layout: post
-title: "Day 2: SSTable Optimization and Architectural Refinement"
+title: "SSTable Optimization and Architectural Refinement"
+subtitle: "Implementing binary search optimization, API improvements, and major architectural refactor separating Operation from InternalKey"
 date: 2025-05-28
+day: 2
 categories: [development, database, sstable, optimization]
 tags: [ferrisdb, rust, lsm-tree, binary-search, architecture]
+stats: ["📊 44 tests passing", "📄 3 PRs merged", "⏱️ Binary search optimization", "🔧 Major architectural refactor"]
 ---
 
 ## Day 2: SSTable Optimization and Architectural Refinement
