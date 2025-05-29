@@ -21,8 +21,8 @@
 - [x] Implement Write-Ahead Log (WAL)
 - [x] Implement MemTable with Skip List
 - [x] Design SSTable binary format specification
-- [ ] Implement SSTable writer
-- [ ] Implement SSTable reader and index
+- [x] Implement SSTable writer
+- [x] Implement SSTable reader and index
 - [ ] Implement compaction strategy
 - [ ] Implement bloom filters for optimization
 - [ ] Add block cache for frequently accessed data

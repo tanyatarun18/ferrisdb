@@ -297,6 +297,7 @@ impl Footer {
 pub mod reader;
 pub mod writer;
 
+pub use reader::{SSTableIterator, SSTableReader, SSTableReaderInfo};
 pub use writer::{SSTableInfo, SSTableWriter};
 
 #[cfg(test)]
@@ -419,5 +420,112 @@ mod tests {
         // key_serialized_size + value_len(4) + value
         let expected_size = (4 + 8 + 1 + 8) + 4 + 10;
         assert_eq!(entry.serialized_size(), expected_size);
+    }
+
+    #[test]
+    fn test_sstable_writer_reader_integration() {
+        use crate::sstable::{SSTableReader, SSTableWriter};
+        use tempfile::TempDir;
+
+        let temp_dir = TempDir::new().unwrap();
+        let path = temp_dir.path().join("integration.sst");
+
+        // Create test data
+        let test_entries = vec![
+            (
+                InternalKey::new(b"apple".to_vec(), 100, Operation::Put),
+                b"red fruit".to_vec(),
+            ),
+            (
+                InternalKey::new(b"banana".to_vec(), 200, Operation::Put),
+                b"yellow fruit".to_vec(),
+            ),
+            (
+                InternalKey::new(b"banana".to_vec(), 150, Operation::Put),
+                b"old yellow".to_vec(),
+            ),
+            (
+                InternalKey::new(b"cherry".to_vec(), 300, Operation::Delete),
+                Vec::new(),
+            ),
+            (
+                InternalKey::new(b"date".to_vec(), 250, Operation::Put),
+                b"sweet fruit".to_vec(),
+            ),
+        ];
+
+        // Write the SSTable
+        {
+            let mut writer = SSTableWriter::new(&path).unwrap();
+            for (key, value) in &test_entries {
+                writer.add(key.clone(), value.clone()).unwrap();
+            }
+            let info = writer.finish().unwrap();
+            assert_eq!(info.entry_count, test_entries.len());
+        }
+
+        // Read and verify
+        {
+            let mut reader = SSTableReader::open(&path).unwrap();
+
+            // Test exact key lookups
+            for (key, expected_value) in &test_entries {
+                let result = reader.get(key).unwrap();
+                assert_eq!(result.as_ref(), Some(expected_value));
+            }
+
+            // Test get_latest functionality
+            let latest_banana = reader.get_latest(&b"banana".to_vec(), 1000).unwrap();
+            assert!(latest_banana.is_some());
+            let (value, timestamp, _) = latest_banana.unwrap();
+            assert_eq!(value, b"yellow fruit".to_vec());
+            assert_eq!(timestamp, 200);
+
+            // Test get_latest with timestamp constraint
+            let old_banana = reader.get_latest(&b"banana".to_vec(), 175).unwrap();
+            assert!(old_banana.is_some());
+            let (value, timestamp, _) = old_banana.unwrap();
+            assert_eq!(value, b"old yellow".to_vec());
+            assert_eq!(timestamp, 150);
+
+            // Test missing key
+            let missing = reader
+                .get(&InternalKey::new(b"missing".to_vec(), 100, Operation::Put))
+                .unwrap();
+            assert_eq!(missing, None);
+
+            // Test iterator
+            let mut iter = reader.iter().unwrap();
+            let mut count = 0;
+            let mut last_key: Option<InternalKey> = None;
+
+            while let Some(entry_result) = iter.next() {
+                let entry = entry_result.unwrap();
+
+                // Verify ordering
+                if let Some(ref last) = last_key {
+                    assert!(entry.key >= *last, "Entries not in sorted order");
+                }
+                last_key = Some(entry.key.clone());
+                count += 1;
+            }
+            assert_eq!(count, test_entries.len());
+
+            // Test range iterator
+            let start_key = b"banana".to_vec();
+            let end_key = b"date".to_vec();
+            let mut range_iter = reader.range_iter(Some(&start_key), Some(&end_key)).unwrap();
+
+            let mut range_entries = Vec::new();
+            while let Some(entry_result) = range_iter.next() {
+                let entry = entry_result.unwrap();
+                assert!(entry.key.user_key >= start_key);
+                assert!(entry.key.user_key < end_key);
+                range_entries.push(entry);
+            }
+
+            // Should include banana versions and cherry
+            assert!(range_entries.len() >= 3);
+        }
     }
 }
