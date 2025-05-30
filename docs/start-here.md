@@ -97,7 +97,7 @@ This isn't just another database project. I'm learning WITH Claude AI:
 3. **I review** → "Why no error handling here?"
 4. **We iterate** → Better code through questions
 
-[See How We Work →]({{ '/blog/human/' | relative_url }}){: .btn .btn-sm .btn-outline }
+[See How We Work →]({{ '/how-we-work/' | relative_url }}){: .btn .btn-sm .btn-outline }
 
 ---
 

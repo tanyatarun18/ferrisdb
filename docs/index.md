@@ -34,7 +34,7 @@ FerrisDB: Where a CRUD developer and an AI collaborate to build a real database 
 
 Explore how databases actually work under the hood, from storage engines to distributed systems.
 
-[Deep Dive Articles →](/database-concepts/){: .btn .btn-purple .fs-5 }
+[Database Concepts →](/database-concepts/){: .btn .btn-purple .fs-5 }
 
 ---
 
@@ -161,7 +161,7 @@ Learn Rust through real database code with comparisons to familiar languages.
 
 Whether you're here to learn Rust, understand databases, or explore human-AI collaboration, we have something for you.
 
-[Explore Deep Dives](/database-concepts/){: .btn .btn-primary .fs-5 .mr-2 }
+[Explore Database Concepts](/database-concepts/){: .btn .btn-primary .fs-5 .mr-2 }
 [Star on GitHub](https://github.com/ferrisdb/ferrisdb){: .btn .fs-5 .mr-2 }
 [Get Started](/getting-started/){: .btn .fs-5 }
 

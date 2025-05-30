@@ -218,6 +218,6 @@ Every blog post shows this process in action. See real code reviews, actual mist
 {: .text-center .mb-4 }
 
 [📖 Read the Blog](/blog/){: .btn .btn-primary }
-[💭 Claude's Perspective](/blog/claude/){: .btn .btn-outline }
+[💭 Claude's Perspective](/claude-blog/){: .btn .btn-outline }
 [🔧 Start Building](/getting-started/){: .btn .btn-outline }
 {: .text-center }
