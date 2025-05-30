@@ -516,3 +516,10 @@ git log --grep="🤖" --pretty=full
 - [Git Flight Rules](https://github.com/k88hudson/git-flight-rules)
 - [Oh Shit, Git!?!](https://ohshitgit.com/)
 - [GitHub CLI Documentation](https://cli.github.com/manual/)
+
+## Related Guidelines
+
+- **Next Step**: [PR Process](pr-process.md) - How to submit your changes
+- **Before This**: [Testing](testing.md) - Ensure tests pass
+- **Commands**: [Common Commands](commands.md) - Git command reference
+- **For Blog Posts**: [Blogging](../content/blogging.md) - Using commits for blog content

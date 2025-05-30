@@ -90,13 +90,82 @@ cargo doc --all --no-deps 2>&1 | grep "warning:"
 
 ## Technical Specification Documentation
 
+### Visualization Guidelines
+
+**IMPORTANT**: We prioritize clear visualizations to aid understanding. Use these approaches:
+
+1. **ASCII Diagrams** - Primary visualization method
+
+   - Architecture diagrams
+   - Data flow representations
+   - Component relationships
+   - State transitions
+
+2. **Tables** - For structured comparisons
+
+   - Performance characteristics
+   - Feature comparisons
+   - Configuration options
+   - API parameters
+
+3. **Standard Diagram Types**
+
+   - **Flow Charts** - Process flows and decision trees
+   - **State Diagrams** - State machines and transitions
+   - **Sequence Diagrams** - Interaction between components
+   - **Activity Diagrams** - Workflow and parallel processes
+   - **Block Diagrams** - System architecture
+
+4. **Best Practices**
+
+   - Keep diagrams simple and focused
+   - Use consistent notation and symbols
+   - Add legends when using special symbols
+   - Align boxes and lines for readability
+   - Update diagrams when implementation changes
+
+5. **Implementation Status**
+   - **Clearly mark speculative content** - Use "[PLANNED]" or "[CONCEPTUAL]"
+   - **Update when implemented** - Remove speculative markers
+   - **Track in TODOs** - Add TODO comments to revisit
+
+Example ASCII diagram:
+
+```
+┌─────────────┐     ┌─────────────┐
+│   Client    │────▶│   Server    │
+└─────────────┘     └──────┬──────┘
+                           │
+                    ┌──────▼──────┐
+                    │   Storage   │
+                    └─────────────┘
+```
+
+Example state diagram:
+
+```
+    ┌─────────┐
+    │  Init   │
+    └────┬────┘
+         │ start()
+    ┌────▼────┐
+    │ Running │◀─┐
+    └────┬────┘  │ recover()
+         │       │
+         │ error()
+    ┌────▼────┐  │
+    │  Error  │──┘
+    └─────────┘
+```
+
 ### Architecture Documents
 
 - Located in `/docs/architecture.md` and related files
-- Include diagrams (ASCII art or mermaid)
+- Must include clear ASCII diagrams
 - Explain design decisions and trade-offs
 - Link to relevant code implementations
 - Keep updated as architecture evolves
+- Mark speculative sections clearly
 
 ### API Reference
 

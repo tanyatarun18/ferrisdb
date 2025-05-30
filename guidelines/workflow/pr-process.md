@@ -26,7 +26,7 @@ Comprehensive guidelines for creating, reviewing, and merging pull requests in F
 2. **Make changes**: Edit files, add tests, update documentation
 3. **Lint and format**:
    - Rust: `cargo fmt --all && cargo clippy --all-targets --all-features -- -D warnings`
-   - Markdown: `prettier --write "**/*.md" && markdownlint-cli2 "**/*.md"`
+   - Markdown: See [Markdown Standards](../development/markdown-standards.md#quick-start)
 4. **Commit changes**: Use conventional commit messages
 5. **Push branch**: `git push -u origin <branch-name>`
 6. **Open PR**: `gh pr create` with descriptive title and body

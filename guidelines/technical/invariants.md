@@ -2,6 +2,9 @@
 
 Critical invariants that must be maintained throughout FerrisDB's implementation.
 
+**Prerequisites**: Understanding of database ACID properties and distributed systems concepts  
+**Related**: [Architecture](architecture.md), [Storage Engine](storage-engine.md), [Testing](../workflow/testing.md)
+
 ## Key System Invariants
 
 1. **Transactions must be serializable**

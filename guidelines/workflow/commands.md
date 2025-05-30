@@ -160,6 +160,65 @@ alias fdb-md='prettier --check "**/*.md" && markdownlint-cli2 "**/*.md"'
 alias fdb-docs='cd docs && bundle exec jekyll serve'
 ```
 
+## Website Maintenance Commands
+
+### Statistics and Metrics
+
+```bash
+# Cached statistics function (avoids recomputing)
+get_cached_stats() {
+    local current_commit=$(git rev-parse HEAD)
+    local cache_file="/tmp/ferrisdb_stats_cache.txt"
+
+    if [[ -f "$cache_file" ]]; then
+        local cached_commit=$(head -n1 "$cache_file" 2>/dev/null)
+        if [[ "$cached_commit" == "$current_commit" ]]; then
+            tail -n+2 "$cache_file"
+            return 0
+        fi
+    fi
+
+    echo "Computing fresh statistics for commit $current_commit..."
+    local days=$(git log --format="%ad" --date=short -- "*.rs" "Cargo.toml" | sort | uniq | wc -l)
+    local lines=$(find . -path ./target -prune -o -name "*.rs" -type f -print | xargs wc -l | tail -1 | awk '{print $1}')
+    local tests=$(grep -r "#\[test\]" --include="*.rs" . | wc -l)
+    local posts=$(find docs/_posts -name "*.md" | grep -v template | wc -l)
+
+    {
+        echo "$current_commit"
+        echo "DAYS=$days"
+        echo "LINES=$lines"
+        echo "TESTS=$tests"
+        echo "POSTS=$posts"
+        echo "SUMMARY=\"Day $days of development with $lines lines of Rust code, $tests passing tests, and $posts blog posts\""
+    } > "$cache_file"
+
+    tail -n+2 "$cache_file"
+}
+
+# Usage
+eval "$(get_cached_stats)"
+echo "Days: $DAYS, Lines: $LINES, Tests: $TESTS, Posts: $POSTS"
+```
+
+### Content Validation
+
+```bash
+# Find all progress sections
+grep -n "Progress\|What's Working\|Currently Building\|Coming" docs/*.md
+
+# Check for outdated status tags
+grep -r "\[PLANNED\]\|\[CONCEPTUAL\]\|\[FUTURE\]" docs/ --include="*.md"
+
+# Verify companion blog posts exist
+for post in docs/_posts/*human*.md; do
+    day=$(grep "day:" "$post" | cut -d' ' -f2)
+    if ! find docs/_posts -name "*claude*day-$day-*.md" | grep -q .; then
+        echo "Missing Claude post for day $day"
+    fi
+done
+```
+
 ## Before Committing Checklist
 
 Run these commands before every commit:

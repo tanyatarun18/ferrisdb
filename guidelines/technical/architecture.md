@@ -2,6 +2,11 @@
 
 Key architectural decisions and design principles for FerrisDB.
 
+**NOTE**: This document serves as the authoritative source of truth for all FerrisDB architectural decisions. Any technical content (blog posts, documentation, code) must align with the decisions documented here. If a better approach is discovered, update this document first before implementing changes.
+
+**Prerequisites**: Basic understanding of distributed systems and database concepts  
+**Related**: [Storage Engine](storage-engine.md), [System Invariants](invariants.md), [Performance](performance.md)
+
 ## System Architecture
 
 ### Overview

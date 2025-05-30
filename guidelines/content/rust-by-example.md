@@ -35,6 +35,27 @@ Every "Rust by Example" article must follow this exact structure:
 - **Explain Rust concepts simply**: Assume zero Rust knowledge
 - **Provide working code**: All code examples must compile and run
 - **Accurate comparisons**: Don't oversimplify other languages or ignore their strengths
+- **Mark unimplemented features**: Use [PLANNED] or [CONCEPTUAL] tags when discussing future work
+
+### Implementation Status
+
+**MANDATORY**: Be clear about what's implemented vs. planned:
+
+1. **For Current Code**
+
+   ```markdown
+   Here's how FerrisDB handles concurrent writes using Arc:
+   ```
+
+2. **For Future Features**
+
+   ```markdown
+   ## Lock-Free Implementation [PLANNED]
+
+   > **Note**: Currently using Arc with RwLock. Lock-free version planned.
+
+   In the future, we plan to implement a lock-free skip list...
+   ```
 
 ## Writing Guidelines
 

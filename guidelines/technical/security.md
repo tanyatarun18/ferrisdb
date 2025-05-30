@@ -2,6 +2,9 @@
 
 Security best practices and considerations for FerrisDB development.
 
+**Prerequisites**: Basic understanding of security principles and common vulnerabilities  
+**Related**: [Architecture](architecture.md), [Code Style](../development/code-style.md), [PR Process](../workflow/pr-process.md)
+
 ## Security Principles
 
 1. **Defense in depth** - Multiple layers of security

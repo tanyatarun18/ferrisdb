@@ -31,8 +31,41 @@ Every database concepts article must follow this exact structure:
 - **Include file references**: `// ferrisdb-[crate]/src/[component]/[file].rs:[line-range]`
 - **Provide performance data**: Include concrete measurements, not theoretical claims
 - **Explain design decisions**: Why FerrisDB chose this approach over alternatives
-- **Show visual diagrams**: ASCII art or diagrams for complex concepts
+- **Show visual diagrams**: Use Mermaid diagrams based on ASCII originals in technical guidelines
 - **Include hands-on exercises**: Practical ways to explore the concepts
+- **Mark unimplemented features**: Use [PLANNED], [CONCEPTUAL], or [FUTURE] tags clearly
+
+### Implementation Status Requirements
+
+**CRITICAL**: Articles often discuss both implemented and planned features. Always be clear:
+
+1. **For Implemented Features**
+
+   ```markdown
+   ## Current Implementation
+
+   FerrisDB currently uses a concurrent skip list for the MemTable:
+   ```
+
+2. **For Planned Features**
+
+   ```markdown
+   ## Future Optimizations [PLANNED]
+
+   > **Note**: This section describes optimizations we plan to implement.
+
+   In future versions, we will add bloom filters to reduce disk reads...
+   ```
+
+3. **For Conceptual Discussions**
+
+   ```markdown
+   ## Alternative Approaches [CONCEPTUAL]
+
+   > **Note**: This explores approaches FerrisDB might adopt in the future.
+
+   Some databases use B-trees instead of LSM-trees. If we were to...
+   ```
 
 ## Writing Guidelines
 

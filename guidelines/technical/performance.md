@@ -2,6 +2,9 @@
 
 Performance considerations and optimization strategies for FerrisDB.
 
+**Prerequisites**: Understanding of Rust performance characteristics, benchmarking tools, and profiling  
+**Related**: [Architecture](architecture.md), [Storage Engine](storage-engine.md), [Testing](../workflow/testing.md)
+
 ## Performance Philosophy
 
 1. **Correctness first** - Never sacrifice correctness for speed

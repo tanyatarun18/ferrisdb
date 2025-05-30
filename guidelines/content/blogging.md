@@ -53,6 +53,46 @@ The operation isn't part of the key's identity...
 
 ## Writing Effective Blog Posts
 
+### Implementation Status Requirements
+
+**MANDATORY**: Any blog post discussing features must clearly indicate implementation status:
+
+1. **For Unimplemented Features**
+
+   ```markdown
+   ## Transaction Support [PLANNED]
+
+   > **Note**: This feature is not yet implemented. This post explores the design concepts.
+
+   When we implement transactions, FerrisDB will...
+   ```
+
+2. **For Partially Implemented Features**
+
+   ```markdown
+   ## Compaction Strategy [IN PROGRESS]
+
+   > **Status**: Basic compaction implemented, advanced strategies planned.
+
+   Currently, FerrisDB uses a simple size-tiered compaction...
+   ```
+
+3. **For Conceptual Discussions**
+
+   ```markdown
+   ## Exploring Lock-Free Data Structures [CONCEPTUAL]
+
+   > **Note**: This post discusses theoretical approaches we're considering.
+
+   In future iterations, we might explore...
+   ```
+
+4. **Clear Language Rules**
+   - Use "will" or "would" for future features
+   - Use "currently" or "now" for implemented features
+   - Never imply something exists when it doesn't
+   - Update posts when features are implemented
+
 ### Human Perspective Posts
 
 Focus on:

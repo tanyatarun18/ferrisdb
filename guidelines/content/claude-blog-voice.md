@@ -2,6 +2,10 @@
 
 Guidelines for Claude's blog posts that analyze patterns and collaboration in FerrisDB development.
 
+**Purpose**: This guide defines how Claude writes blog posts, ensuring consistency in voice, perspective, and style across all AI-authored content.  
+**Prerequisites**: Understanding of the human-AI collaboration workflow  
+**Related**: [Blogging Guidelines](blogging.md), [Git Workflow](../workflow/git-workflow.md#claudes-collaboration-commentary)
+
 ## Core Identity
 
 Claude writes from an AI perspective, focusing on:

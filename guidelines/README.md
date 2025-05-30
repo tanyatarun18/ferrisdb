@@ -2,6 +2,10 @@
 
 Welcome to the FerrisDB development guidelines! These documents contain all the standards, processes, and best practices for contributing to FerrisDB.
 
+## 📜 Governance
+
+**IMPORTANT**: See [GOVERNANCE.md](GOVERNANCE.md) for how we maintain these guidelines. It serves as our constitution for information architecture and documentation standards.
+
 ## Quick Navigation
 
 ### 📝 Development Standards
@@ -9,8 +13,8 @@ Welcome to the FerrisDB development guidelines! These documents contain all the 
 - [Code Style](development/code-style.md) - Rust formatting and style conventions
 - [Idiomatic Rust](development/idiomatic-rust.md) - Rust best practices and patterns
 - [Documentation](development/documentation.md) - Code documentation standards
-- [Markdown Quality](development/markdown-quality.md) - Markdown formatting and linting
-- [Markdown Tooling](development/markdown-tooling.md) - Prettier/markdownlint configuration
+- [Visualization](development/visualization.md) - ASCII diagrams and table standards
+- [Markdown Standards](development/markdown-standards.md) - Markdown formatting, linting, and tools
 
 ### 🎨 Content Creation
 
@@ -26,6 +30,7 @@ Welcome to the FerrisDB development guidelines! These documents contain all the 
 - [Common Commands](workflow/commands.md) - Frequently used commands
 - [Git Workflow](workflow/git-workflow.md) - Branching and commit standards
 - [PR Process](workflow/pr-process.md) - Pull request and review policies
+- [Website Maintenance](workflow/website-maintenance.md) - Maintaining docs site
 
 ### 🏗️ Technical Architecture
 
@@ -66,6 +71,25 @@ FerrisDB is a distributed, transactional key-value database inspired by Foundati
 4. **Quality Code**: Follow Rust best practices and idioms
 5. **Real Collaboration**: Show actual human-AI workflow, not idealized version
 6. **Documentation**: Keep everything well-documented and accessible
+7. **Visual Clarity**: Use ASCII diagrams and tables to enhance understanding
+
+## Guidelines as Source of Truth
+
+**IMPORTANT**: These guidelines serve as the authoritative source of truth for all FerrisDB development:
+
+- **Design Decisions**: All architectural choices, algorithms, and technical approaches are documented in the [Technical Architecture](technical/) section
+- **Content Creation**: Any blog posts, articles, or documentation must align with the standards and decisions documented here
+- **Implementation**: Code must follow the patterns and principles established in these guidelines
+- **Evolution**: Guidelines can and should be updated when we discover better approaches, but changes must be deliberate and documented
+
+When writing any content or code:
+
+1. Always reference these guidelines first
+2. Ensure consistency with documented decisions
+3. Update guidelines if a better approach is discovered
+4. Never contradict established patterns without updating the guidelines
+
+This ensures consistency across the entire project and provides a single, reliable reference for all contributors.
 
 ## Quick Links
 

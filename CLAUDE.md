@@ -4,28 +4,70 @@ Welcome! This is the quick reference for FerrisDB development. For detailed guid
 
 ⚠️ **Important**: This file is an INDEX for quick lookups. Do NOT add detailed content here - update the appropriate guideline file instead and link to it.
 
+## 📌 Guidelines as Source of Truth
+
+**CRITICAL**: The [guidelines directory](guidelines/) contains the authoritative source of truth for ALL design decisions, technical approaches, and content standards.
+
+### 📜 How We Maintain Guidelines
+
+See [GOVERNANCE.md](guidelines/GOVERNANCE.md) - Our constitution for maintaining information architecture. Key principles:
+
+1. **Absolute Accuracy** - No lies, no fiction, no speculation without labels
+2. **Living Source of Truth** - Follow faithfully, evolve thoughtfully
+3. **Information Architecture First** - Structure for humans and AI efficiency
+4. **Maintain the Architecture** - Every update preserves the structure
+
+When creating any content or implementing any feature:
+
+- Consult guidelines first for established patterns
+- Never contradict without updating the source
+- Follow the update cascade protocol in GOVERNANCE.md
+
 ## 🚀 Quick Start
 
 ### Essential Reading
 
-1. [Code Style](guidelines/development/code-style.md) - Formatting and conventions
-2. [Git Workflow](guidelines/workflow/git-workflow.md) - Branching and commits
-3. [PR Process](guidelines/workflow/pr-process.md) - How to submit changes
+1. [Code Style](guidelines/development/code-style.md) → [Idiomatic Rust](guidelines/development/idiomatic-rust.md) - Write good Rust
+2. [Git Workflow](guidelines/workflow/git-workflow.md) → [PR Process](guidelines/workflow/pr-process.md) - Submit changes
+3. [Testing](guidelines/workflow/testing.md) → [Commands](guidelines/workflow/commands.md) - Verify your work
 
 ### For Different Roles
 
-- **New Contributors**: Start with the essentials above
-- **Content Writers**: See [Content Guidelines](guidelines/content/) for blogs, articles, and website
-- **Core Developers**: Review [System Invariants](guidelines/technical/invariants.md)
-- **Claude (me!) 🤖**: I follow all guidelines, especially [PR Review Process](guidelines/workflow/pr-process.md#claudes-pr-review-process)
+#### 👨‍💻 New Contributors
+
+Start with: Essential Reading → [Development README](guidelines/development/) → [DEVELOPMENT.md](DEVELOPMENT.md)
+
+#### ✍️ Content Writers
+
+Start with: [Content README](guidelines/content/) → Choose your content type:
+
+- [Blog Posts](guidelines/content/blogging.md) + [Claude's Voice](guidelines/content/claude-blog-voice.md)
+- [Database Concepts](guidelines/content/database-concepts-articles.md)
+- [Rust by Example](guidelines/content/rust-by-example.md)
+
+#### 🏗️ Core Developers
+
+Review: [Technical README](guidelines/technical/) → [Architecture](guidelines/technical/architecture.md) → [Invariants](guidelines/technical/invariants.md)
+
+#### 🌐 Website Maintainers
+
+Follow: [Website Design](guidelines/content/website-design.md) → [Website Maintenance](guidelines/workflow/website-maintenance.md)
+
+#### 🤖 Claude (me!)
+
+I follow ALL guidelines, especially:
+
+- [PR Review Process](guidelines/workflow/pr-process.md#claudes-pr-review-process)
+- [Collaboration Commentary](guidelines/workflow/git-workflow.md#claudes-collaboration-commentary)
+- [My Blog Voice](guidelines/content/claude-blog-voice.md)
 
 ## 📋 Quick Lookup: "When you ask me to..."
 
 ### Code & Development Tasks
 
 - **"Write some code"** → [Code Style](guidelines/development/code-style.md) + [Idiomatic Rust](guidelines/development/idiomatic-rust.md)
-- **"Add documentation"** → [Documentation Standards](guidelines/development/documentation.md)
-- **"Fix formatting"** → [Markdown Quality](guidelines/development/markdown-quality.md)
+- **"Add documentation"** → [Documentation Standards](guidelines/development/documentation.md) + [Visualization](guidelines/development/visualization.md)
+- **"Fix formatting"** → [Markdown Standards](guidelines/development/markdown-standards.md)
 - **"Run tests"** → [Testing Standards](guidelines/workflow/testing.md)
 - **"Check performance"** → [Performance Guidelines](guidelines/technical/performance.md)
 
@@ -36,8 +78,8 @@ Welcome! This is the quick reference for FerrisDB development. For detailed guid
 - **"Create a database concept"** → [Database Concepts Articles](guidelines/content/database-concepts-articles.md)
 - **"Explain Rust concepts"** → [Rust by Example](guidelines/content/rust-by-example.md)
 - **"Update the website"** → [Website Design](guidelines/content/website-design.md)
-- **"Update FAQ.md"** → [FAQ Maintenance](guidelines/content/website-design.md#faq-maintenance)
-- **"Update statistics"** → [Cached Statistics](guidelines/content/website-design.md#faq-maintenance) (avoids recomputing for same commit)
+- **"Update FAQ.md"** → [Website Maintenance](guidelines/workflow/website-maintenance.md#faq-specific-maintenance)
+- **"Update statistics"** → [Website Maintenance](guidelines/workflow/website-maintenance.md) + [Commands](guidelines/workflow/commands.md#statistics-and-metrics)
 
 ### Process & Workflow Tasks
 
@@ -104,7 +146,8 @@ This tracks collaboration patterns for blog posts and research. **Never skip thi
 - [Code Style](guidelines/development/code-style.md) - Rust formatting rules
 - [Idiomatic Rust](guidelines/development/idiomatic-rust.md) - Best practices
 - [Documentation](guidelines/development/documentation.md) - Code doc standards
-- [Markdown Quality](guidelines/development/markdown-quality.md) - MD formatting
+- [Visualization](guidelines/development/visualization.md) - Diagrams and tables
+- [Markdown Standards](guidelines/development/markdown-standards.md) - Formatting and tools
 
 ### [Content Creation](guidelines/content/)
 
@@ -129,15 +172,64 @@ This tracks collaboration patterns for blog posts and research. **Never skip thi
 - [Security](guidelines/technical/security.md) - Security practices
 - [Invariants](guidelines/technical/invariants.md) - System properties
 
+## 🔄 Common Workflows
+
+### Starting a New Feature
+
+1. [Architecture Decision](guidelines/technical/architecture.md) - Design first
+2. [Code Style](guidelines/development/code-style.md) - Write code
+3. [Testing](guidelines/workflow/testing.md) - Add tests
+4. [Git Workflow](guidelines/workflow/git-workflow.md) - Commit with commentary
+5. [PR Process](guidelines/workflow/pr-process.md) - Submit for review
+
+### Writing Content
+
+1. Choose type: [Blog](guidelines/content/blogging.md) / [Database Concept](guidelines/content/database-concepts-articles.md) / [Rust Example](guidelines/content/rust-by-example.md)
+2. [Visualization](guidelines/development/visualization.md) - Add diagrams if needed
+3. [Markdown Standards](guidelines/development/markdown-standards.md) - Format properly
+4. [Website Maintenance](guidelines/workflow/website-maintenance.md) - Update stats/progress
+
+### Daily Maintenance
+
+1. [Website Maintenance](guidelines/workflow/website-maintenance.md#daily-maintenance-tasks) - Update stats
+2. [Commands](guidelines/workflow/commands.md#website-maintenance-commands) - Use cached functions
+3. Check ROADMAP.md - Ensure progress accuracy
+
+## 🛠️ Troubleshooting
+
+### "Markdown won't format correctly"
+
+→ See [Markdown Standards](guidelines/development/markdown-standards.md#common-issues-and-solutions)
+
+### "Jekyll build is failing"
+
+→ Check [Markdown Standards](guidelines/development/markdown-standards.md#jekyllkramdown-compatibility)
+
+### "Where do I put this content?"
+
+→ See guideline READMEs: [Development](guidelines/development/), [Content](guidelines/content/), [Technical](guidelines/technical/), [Workflow](guidelines/workflow/)
+
+### "Statistics don't match across pages"
+
+→ Use [cached statistics](guidelines/workflow/commands.md#statistics-and-metrics) function
+
+### "How do I maintain the website?"
+
+→ Follow [Website Maintenance](guidelines/workflow/website-maintenance.md) workflow
+
 ## 🤖 Claude's Maintenance Notes
 
 ### When Updating Guidelines
 
-1. **Update the specific guideline file** in `guidelines/`
+**MUST FOLLOW [GOVERNANCE.md](guidelines/GOVERNANCE.md)**
+
+1. **Update the specific guideline file** in `guidelines/` (single source principle)
 2. **Update this index ONLY** if adding new sections or changing structure
-3. **Update cross-references** in related guideline files
+3. **Follow update cascade protocol** - Update all cross-references
 4. **Test all links** to ensure they work
 5. **NEVER add detailed content to CLAUDE.md** - it's an index, not a manual!
+6. **Check for redundancy** - Don't duplicate existing content
+7. **Maintain information architecture** - Right content in right place
 
 ### My Quick Reminders
 

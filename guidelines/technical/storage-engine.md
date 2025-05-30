@@ -2,6 +2,9 @@
 
 Guidelines for working on FerrisDB's LSM-tree storage engine.
 
+**Prerequisites**: Understanding of LSM-trees, skip lists, and basic database storage concepts  
+**Related**: [Architecture](architecture.md), [Performance](performance.md), [System Invariants](invariants.md)
+
 ## Storage Engine Components
 
 ### MemTable

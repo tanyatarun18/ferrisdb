@@ -179,6 +179,9 @@ mod tests {
 - Ensure all tests pass with `cargo test --all`
 - Use conventional commit messages (e.g., `feat:`, `fix:`, `docs:`)
 
----
+## Related Guidelines
 
-_Next: [Idiomatic Rust Guidelines](idiomatic-rust.md)_
+- **Next**: [Idiomatic Rust](idiomatic-rust.md) - Rust best practices and patterns
+- **Then**: [Documentation](documentation.md) - How to document your code
+- **Also See**: [Testing](../workflow/testing.md) - Writing tests for your code
+- **Before Committing**: [Git Workflow](../workflow/git-workflow.md) - Collaboration standards

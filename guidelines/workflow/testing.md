@@ -2,6 +2,10 @@
 
 This document outlines the testing requirements and standards for FerrisDB.
 
+**Purpose**: Ensure code quality and prevent regressions through comprehensive testing practices.  
+**Prerequisites**: Basic understanding of Rust's testing framework  
+**Related**: [Code Style](../development/code-style.md), [PR Process](pr-process.md), [Commands](commands.md#testing)
+
 ## Test Requirements
 
 ### Minimum Coverage

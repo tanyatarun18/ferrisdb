@@ -13,6 +13,62 @@ Design guidelines for the FerrisDB documentation website, focusing on educationa
 
 **⚠️ IMPORTANT**: Use ONLY Just the Docs built-in utilities. No custom CSS allowed.
 
+### Diagram Guidelines for Website
+
+**CRITICAL**: Website content uses Mermaid diagrams for better visual presentation, but ALL Mermaid diagrams MUST be based on corresponding ASCII diagrams in the technical guidelines.
+
+1. **Mermaid for Website Content**
+   - Use Mermaid.js for blog posts, articles, and documentation pages
+   - Provides cleaner rendering and better responsiveness
+   - Supports interactive features and theming
+2. **ASCII as Source of Truth**
+   - Every Mermaid diagram must have an ASCII counterpart in technical guidelines
+   - ASCII diagrams in `/guidelines/technical/` are authoritative
+   - When updating diagrams, update ASCII first, then Mermaid
+3. **Mermaid Syntax Examples**
+
+   ```mermaid
+   graph TD
+       A[Client] --> B[Server]
+       B --> C[Storage Engine]
+       C --> D[MemTable]
+       C --> E[SSTables]
+       C --> F[WAL]
+   ```
+
+4. **Consistency Rules**
+   - Node names must match between ASCII and Mermaid
+   - Flow direction must be identical
+   - All components shown in ASCII must appear in Mermaid
+   - Labels and descriptions must align
+
+### Implementation Status in Content
+
+**MANDATORY**: When creating any content (blog posts, articles, documentation) that discusses features not yet implemented:
+
+1. **Clear Status Markers**
+   - Use **[PLANNED]**, **[CONCEPTUAL]**, or **[FUTURE]** tags
+   - Place status at the beginning of sections
+   - Use callout boxes for emphasis
+2. **Example Patterns**
+
+   ```markdown
+   ## Transaction Support [PLANNED]
+
+   > **Note**: This section describes planned functionality not yet implemented.
+
+   In the future, FerrisDB will support ACID transactions...
+   ```
+
+3. **Avoid Misleading Claims**
+   - Never present future features as current
+   - Use future tense for unimplemented features
+   - Be explicit about what exists vs. what's planned
+4. **Update When Implemented**
+   - Remove status markers when features land
+   - Update tense from future to present
+   - Add "Available since version X" notes
+
 ### Color Palette
 
 Defined in `_sass/color_schemes/ferrisdb.scss` and applied automatically:
@@ -248,13 +304,13 @@ The `ROADMAP.md` file is the SINGLE source of truth for ALL project progress dis
 
 ## Regular Maintenance Tasks
 
-### Daily/Weekly Updates
+For detailed maintenance workflows, see [Website Maintenance](../workflow/website-maintenance.md).
 
-- [ ] Update progress stats on homepage and start page:
-  - Use cached statistics function (see FAQ Maintenance Commands below)
-  - Update all pages with consistent stats from same commit
-  - Only recomputes if HEAD commit has changed since last cache
-- [ ] Update FAQ.md statistics and accuracy (see FAQ Maintenance section below)
+### Quick Reference
+
+- **Daily**: Update statistics and progress sections
+- **Weekly**: Validate links and check progress accuracy
+- **Monthly**: Full content review and navigation testing
 
 ### Update ALL Progress Sections from ROADMAP.md
 
@@ -370,123 +426,15 @@ The `ROADMAP.md` file is the SINGLE source of truth for ALL project progress dis
 - [ ] **When Examples are Added**: Update with `cargo run --example`
 - [ ] **When Server is Ready**: Add client connection examples
 
-### Weekly Link & Content Validation
+### All Maintenance Tasks
 
-- [ ] **Test all CTAs on homepage**: Ensure buttons go to existing pages
-- [ ] **Validate learning paths**: Check that all "Start Learning" → "Database Concepts" → "Rust by Example" flows work
-- [ ] **Check blog cross-references**: Verify companion post links between human/Claude blogs
-- [ ] **Validate external links**: GitHub repo, issues, discussions links still work
-- [ ] **Content accuracy check**: All technical claims match actual ROADMAP.md progress
+See [Website Maintenance](../workflow/website-maintenance.md) for:
 
-### FAQ Maintenance
-
-**Daily Updates (`/faq.md`):**
-
-- [ ] **Update Statistics** in "What is FerrisDB?" section:
-
-  - Current Progress line: Update development days, lines of code, tests, blog posts
-  - Use commands from Daily/Weekly Updates section above
-  - Ensure consistency with homepage (`/index.md`) statistics
-
-- [ ] **Verify Links** (all must work):
-  - Internal: `/blog/`, `/blog/human/`, `/blog/claude/`, `/try-locally/`, `/database-concepts/`
-  - External: GitHub repo, CONTRIBUTING.md, ROADMAP.md, issues page
-  - Navigation: All internal FAQ anchors and cross-references
-
-**Weekly Updates (`/faq.md`):**
-
-- [ ] **Progress Accuracy** against ROADMAP.md:
-
-  - "What's the architecture?" section: Update ✅ status for completed components
-  - "What's next for FerrisDB?" section: Ensure priorities match current ROADMAP.md order
-  - Remove/add features only if ROADMAP.md changes
-
-- [ ] **Blog Structure References**:
-  - "How should I use FerrisDB to learn?" section: Verify blog links and descriptions
-  - Ensure three-perspective blog approach is accurately described
-
-**Monthly Updates (`/faq.md`):**
-
-- [ ] **Content Accuracy Review**:
-
-  - Technical claims about Rust and database concepts
-  - Learning path recommendations and difficulty assessments
-  - Collaboration process descriptions
-  - Community interaction and contribution guidelines
-
-- [ ] **External Link Validation**:
-  - Test all GitHub links for accuracy
-  - Verify CONTRIBUTING.md and ROADMAP.md references
-  - Check that issue tracker and discussions links work
-
-**Commands for FAQ Maintenance:**
-
-```bash
-# Cached statistics script (avoids recomputing for same commit)
-get_cached_stats() {
-    local current_commit=$(git rev-parse HEAD)
-    local cache_file="/tmp/ferrisdb_stats_cache.txt"
-
-    # Check if cache exists and matches current commit
-    if [[ -f "$cache_file" ]]; then
-        local cached_commit=$(head -n1 "$cache_file" 2>/dev/null)
-        if [[ "$cached_commit" == "$current_commit" ]]; then
-            # Use cached stats
-            tail -n+2 "$cache_file"
-            return 0
-        fi
-    fi
-
-    # Compute fresh stats and cache them
-    echo "Computing fresh statistics for commit $current_commit..."
-    local days=$(git log --format="%ad" --date=short -- "*.rs" "Cargo.toml" | sort | uniq | wc -l)
-    local lines=$(find . -path ./target -prune -o -name "*.rs" -type f -print | xargs wc -l | tail -1 | awk '{print $1}')
-    local tests=$(grep -r "#\[test\]" --include="*.rs" . | wc -l)
-    local posts=$(find docs/_posts -name "*.md" | grep -v template | wc -l)
-
-    # Cache results
-    {
-        echo "$current_commit"
-        echo "DAYS=$days"
-        echo "LINES=$lines"
-        echo "TESTS=$tests"
-        echo "POSTS=$posts"
-        echo "SUMMARY=\"Day $days of development with $lines lines of Rust code, $tests passing tests, and $posts blog posts\""
-    } > "$cache_file"
-
-    # Output the stats
-    tail -n+2 "$cache_file"
-}
-
-# Usage Examples:
-
-# 1. Get the summary string directly
-SUMMARY=$(get_cached_stats | grep "SUMMARY=" | cut -d= -f2- | tr -d '"')
-echo "$SUMMARY"
-
-# 2. Source all stats as variables
-eval "$(get_cached_stats)"
-echo "Days: $DAYS, Lines: $LINES, Tests: $TESTS, Posts: $POSTS"
-
-# 3. Get individual values
-DAYS_COUNT=$(get_cached_stats | grep "DAYS=" | cut -d= -f2)
-LINES_COUNT=$(get_cached_stats | grep "LINES=" | cut -d= -f2)
-
-# Benefits:
-# - First call computes and caches (takes ~2-3 seconds)
-# - Subsequent calls use cache (instant, <0.1 seconds)
-# - Cache invalidates automatically when HEAD commit changes
-# - Perfect for maintenance sessions updating multiple pages
-```
-
-### Monthly Review
-
-- [ ] Review all page content for accuracy against ROADMAP.md
-- [ ] Update `/how-we-work.md` with new collaboration examples
-- [ ] Add new social proof quotes if available (from GitHub stars, discussions)
-- [ ] Check for broken links across entire site
-- [ ] Ensure no custom CSS has crept in
-- [ ] Review and update difficulty indicators (📗📙📕) on all content
+- Daily/weekly/monthly checklists
+- Statistics update commands
+- FAQ maintenance procedures
+- Link validation workflows
+- Content accuracy reviews
 
 ## Quality Checklist
 
@@ -501,3 +449,10 @@ LINES_COUNT=$(get_cached_stats | grep "LINES=" | cut -d= -f2)
 - [ ] All progress sections match ROADMAP.md
 - [ ] FAQ.md statistics current and accurate
 - [ ] All FAQ links functional
+
+## Related Guidelines
+
+- **Maintenance**: [Website Maintenance](../workflow/website-maintenance.md) - Step-by-step workflows
+- **Commands**: [Common Commands](../workflow/commands.md#website-maintenance-commands) - Statistics scripts
+- **Content Types**: [Blogging](blogging.md), [Database Concepts](database-concepts-articles.md), [Rust by Example](rust-by-example.md)
+- **Formatting**: [Markdown Standards](../development/markdown-standards.md) - Jekyll compatibility
