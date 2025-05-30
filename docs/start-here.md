@@ -14,8 +14,6 @@ Learn how databases really work by building one from scratch
 
 ## Why Should You Care?
 
-{: .fs-7 .fw-600 }
-
 As a CRUD developer, you've probably:
 
 - Wondered why your queries are slow
@@ -28,8 +26,6 @@ As a CRUD developer, you've probably:
 ---
 
 ## What You'll Learn
-
-{: .fs-7 .fw-600 }
 
 ### Core Concepts (Available Now)
 
@@ -57,8 +53,6 @@ As a CRUD developer, you've probably:
 
 ## Explore The Code (2 minutes)
 
-{: .fs-7 .fw-600 }
-
 ```bash
 ## Clone and explore
 git clone https://github.com/ferrisdb/ferrisdb
@@ -83,25 +77,18 @@ What's implemented so far:
 
 ## Choose Your Path
 
-{: .fs-7 .fw-600 .text-center .mb-6 }
+**📖 Read the Blog** - Follow our daily progress and learnings  
+[Start Reading →]({{ '/blog/' | relative_url }}){: .btn .btn-purple .btn-lg }
 
-[📖 Read the Blog]({{ '/blog/' | relative_url }}){: .btn .btn-purple .btn-lg .mr-2 }
-Follow our daily progress and learnings
-{: .fs-3 .text-grey-dk-100 }
+**🔧 Start Building** - Jump into the code  
+[Get Started →]({{ '/getting-started/' | relative_url }}){: .btn .btn-outline .btn-lg }
 
-[🔧 Start Building]({{ '/getting-started/' | relative_url }}){: .btn .btn-outline .btn-lg .mr-2 }
-Jump into the code
-{: .fs-3 .text-grey-dk-100 }
-
-[🤔 Read Database Concepts]({{ '/database-concepts/' | relative_url }}){: .btn .btn-outline .btn-lg }
-Understand the concepts
-{: .fs-3 .text-grey-dk-100 }
+**🤔 Database Concepts** - Understand the theory  
+[Learn More →]({{ '/database-concepts/' | relative_url }}){: .btn .btn-outline .btn-lg }
 
 ---
 
 ## The Twist: AI Collaboration
-
-{: .fs-7 .fw-600 }
 
 This isn't just another database project. I'm learning WITH Claude AI:
 
@@ -116,13 +103,9 @@ This isn't just another database project. I'm learning WITH Claude AI:
 
 ## Real Progress, Real Learning
 
-{: .fs-7 .fw-600 }
-
-<div class="text-center my-4">
-  <span class="fs-2 fw-700 text-purple-300">Day 2</span> of Rust development
-  <span class="fs-2 fw-700 text-purple-300 ml-4">3,694</span> lines of Rust code
-  <span class="fs-2 fw-700 text-purple-300 ml-4">44</span> tests written
-</div>
+**Day 2** of Rust development  
+**3,694** lines of Rust code  
+**44** tests written
 
 No hiding failures. Every refactor, bug, and "aha!" moment is documented.
 
@@ -130,17 +113,13 @@ No hiding failures. Every refactor, bug, and "aha!" moment is documented.
 
 ## Join Our Learning Journey
 
-{: .fs-6 .fw-600 .text-center }
-
 ⭐ Star the repo to follow along  
 💬 Join discussions on implementation choices  
 🐛 Submit issues when something doesn't make sense
 
 [⭐ Star on GitHub](https://github.com/ferrisdb/ferrisdb){: .btn .btn-primary .btn-lg }
-{: .text-center }
 
 ---
 
 > "This is the resource I wish existed when I started learning databases. Real code, real problems, real solutions."  
 > — A fellow CRUD developer
-> {: .text-grey-dk-300 }
