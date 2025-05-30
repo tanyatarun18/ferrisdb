@@ -2,223 +2,287 @@
 
 Guidelines for writing blog posts that document the FerrisDB development journey.
 
-## Regular Blog Posts
+## Blog Structure
 
-Blog posts document significant milestones, architectural decisions, and learning experiences:
+- **All posts**: `docs/_posts/` - Both human and Claude posts in one directory
+- **Human posts**: Distinguished by `author: human` in frontmatter
+- **Claude posts**: Distinguished by `author: claude` in frontmatter
+- **Templates**:
+  - `human-blog-post-template.md` for human posts
+  - `claude-blog-post-template.md` for Claude posts
 
-- Located in `docs/_posts/` (team) and `docs/_claude_blog/` (Claude)
-- Use descriptive titles and include practical insights
-- Tag posts with relevant categories for easy discovery
-- Write posts after major features, interesting debugging sessions, or collaboration insights
-- Use templates: `docs/_posts/blog-post-template.md` for human posts, `docs/_claude_blog/blog-post-template.md` for Claude posts
+## Core Principles
 
-## Blog Post Format Requirements
+### 1. Accuracy is Paramount
 
-### 1. Excerpt Separator
+- **Verify against codebase**: Cross-check technical details with actual implementation
+- **Match git history**: Ensure stories align with commit history
+- **No fictional scenarios**: Only document what actually happened
+- **Correct misconceptions**: If initial understanding was wrong, update it
 
-Add `<!--more-->` after the opening paragraph to control excerpt:
+### 2. Our Real Workflow
 
-```markdown
----
-layout: post
-title: "Your Title"
----
+Document our actual collaboration pattern:
 
-Opening paragraph that will appear in blog listing.
+1. **Human assigns task**: "Let's implement X"
+2. **Claude implements**: Provides code with tests
+3. **Human reviews**: Asks questions, spots issues
+4. **Claude explains/improves**: Based on feedback
+5. **Iterate**: Until both are satisfied
+6. **PR and merge**: Finalize with clear commits
 
-<!--more-->
+### 3. Show Real Conversations
 
-## Table of contents
+Use actual dialogue patterns:
 
-...
+```
+Me: I'm looking at your SSTable reader implementation. The entries are
+sorted, right? Should we use binary search instead?
+
+Claude: Oh! You're absolutely right. I focused on correctness but missed
+the optimization opportunity. Let me fix that:
+
+[code showing the improvement]
+
+Me: Why do I need to specify Operation::Put when reading? I'm just
+trying to get a value.
+
+Claude: That's... actually a great point. You've identified a design flaw!
+The operation isn't part of the key's identity...
 ```
 
-### 2. Metadata Display
+## Writing Effective Blog Posts
 
-- Use inline format for stats: `📊 55 tests • 📄 5 PRs • 🏗️ Feature built`
-- Date format: `📅 Month Day, Year • 🏗️ Day N`
-- Confidence levels: `☕ Confidence: Start: 3/10 | End: 6/10`
-- Pattern metrics: `🔍 8 patterns • 🤝 Collaboration: 7/10`
+### Human Perspective Posts
 
-### 3. SEO Requirements
+Focus on:
 
-- Always include `description:` field (150-160 characters)
-- Use relevant tags and categories
-- Keep titles descriptive but concise
+- **Code review insights**: Questions that led to improvements
+- **Learning moments**: Understanding through reviewing Claude's code
+- **Design decisions**: Why certain approaches were chosen
+- **Debugging together**: How problems were solved collaboratively
 
-### 4. Visual Consistency
+Example structure:
 
-- NO label badges - use inline text with emojis
-- Consistent emoji usage throughout
-- Clean, integrated appearance
+```markdown
+## The Setup
 
-## Blog Post Format (for main blog)
+[What task was assigned to Claude]
+
+## The Challenge
+
+[Issues found during review]
+
+## Seeking Understanding
+
+[Questions asked and Claude's explanations]
+
+## The Breakthrough
+
+[How the solution emerged through iteration]
+
+## Deeper Understanding
+
+[What was learned from the process]
+
+## Reflection
+
+[How the collaboration worked, confidence levels]
+```
+
+### Claude's Perspective Posts
+
+Focus on:
+
+- **Pattern recognition**: What patterns emerged from collaboration
+- **Human insights**: How human questions improved the code
+- **Learning from review**: What the human's perspective revealed
+- **Workflow evolution**: How our collaboration improved
+
+Example structure:
+
+```markdown
+## 🔍 The [Pattern Name] Pattern
+
+[Description of what was observed]
+
+## 🧠 The [Insight Type] Moment
+
+[How human input changed my approach]
+
+## 🎯 The [Improvement] Discovery
+
+[What we achieved together]
+
+## 📊 Reflection on Collaboration
+
+[Analysis of what worked and why]
+```
+
+## Technical Accuracy Checklist
+
+Before publishing, verify:
+
+1. **Code examples match implementation**
+
+   ```bash
+   # Check actual structs/functions
+   grep -n "struct InternalKey" ferrisdb-storage/src/
+   ```
+
+2. **API changes are accurate**
+
+   ```bash
+   # Verify refactoring commits
+   git log --grep="refactor" --oneline
+   ```
+
+3. **Performance claims are real**
+
+   - Binary search actually implemented?
+   - Optimization measurements accurate?
+
+4. **Design decisions documented correctly**
+
+   - Why was operation in InternalKey?
+   - What prompted the refactoring?
+
+5. **Fact-check against commit commentaries**
+
+   ```bash
+   # Search for Claude's commentaries in commits
+   git log --grep="🤖 Claude's Commentary" --oneline
+
+   # View specific commit with commentary
+   git show <commit-hash>
+   ```
+
+   - Verify timeline matches commentary process
+   - Check iteration counts and insights
+   - Confirm key learnings are accurately represented
+   - Use PR collaboration summaries for overview
+
+## Common Pitfalls to Avoid
+
+### 1. Mixing Up Timeline
+
+❌ "I noticed there were two different InternalKey structs"
+✅ "I noticed the API required Operation::Put when reading"
+
+### 2. Fictional Improvements
+
+❌ "We implemented binary search using binary_search_by"
+✅ "We implemented binary search using partition_point"
+
+### 3. Missing Context
+
+❌ "The code was refactored"
+✅ "My question about the awkward API led to refactoring operation out of InternalKey"
+
+### 4. Wrong Attribution
+
+❌ "Claude suggested using binary search"
+✅ "I asked if we should use binary search since the data was sorted"
+
+## Frontmatter Standards
+
+### Human Posts
 
 ```yaml
 ---
 layout: post
-title: "Your Title Here"
-subtitle: "Brief description of what was accomplished"
+title: "Day N: [Achievement-Focused Title]"
+subtitle: "[How collaboration led to improvement]"
+description: "[Clear description of what was accomplished through review]"
 date: YYYY-MM-DD
-day: N # Day number of development
-tags: [tag1, tag2, tag3]
-stats: ["📊 X tests passing", "📄 Y PRs merged", "⏱️ Key achievement"]
+author: human
+day: N
+tags: [ferrisdb, rust, code-review, collaboration, specific-tech]
+permalink: /blog/human/day-N-descriptive-slug/
+stats:
+  ["📊 X tests passing", "📄 Y PRs merged", "🔍 Z design issues found", "💡 Key improvements made"]
+confidence: "Start: X/10 | End: Y/10"
+review_cycles: "N major iterations"
 ---
 ```
 
-## Gathering Statistics for Blog Posts
+### Claude Posts
 
-Before writing a daily blog post, gather accurate statistics:
-
-```bash
-# Count total tests across all crates
-cargo test --all --quiet 2>&1 | grep -E "test result:" | grep -oE "[0-9]+ passed" | awk '{sum += $1} END {print "Total tests: " sum}'
-
-# List technical PRs merged on the day (adjust dates)
-gh pr list --state merged --limit 50 --json number,title,mergedAt | jq -r '.[] | select(.mergedAt >= "2025-05-28T00:00:00Z" and .mergedAt < "2025-05-29T00:00:00Z") | "\(.number) - \(.title)"' | grep -E "(feat:|fix:|refactor:|perf:|test:)"
-
-# Check current branch for recent commits
-git log --oneline --since="1 day ago" --until="now"
-
-# Verify feature completeness
-grep -E "\[x\].*\(Day [0-9]+\)" TODO.md
+```yaml
+---
+layout: post
+title: "Day N: [Pattern or Learning Focused Title]"
+description: "[How human review transformed the implementation]"
+date: YYYY-MM-DD
+author: claude
+categories: [ai-perspective, collaboration, patterns, learning]
+tags: [claude, human-ai, code-review, specific-patterns]
+permalink: /blog/claude/day-N-descriptive-slug/
+pattern_count: N
+collaboration_score: "X/10"
+---
 ```
 
-## Stats Line Format
+## URL Structure
 
-- First stat: Always include test count (e.g., "📊 55 tests passing")
-- Second stat: Number of technical PRs merged (exclude docs-only PRs)
-- Remaining stats: Key technical achievements of the day
-- Be specific with numbers and achievements, not generic
-
-## When to Write Blog Posts
-
-- End of each development day (summarizing progress)
-- After major architectural decisions
-- When solving interesting technical challenges
-- After significant refactoring or optimization work
-
-## Making Blog Posts Engaging (Page-Turner Style)
-
-### Create a Relatable Protagonist
-
-You're a humble CRUD developer who never imagined building a database!
-
-### Story Elements to Include
-
-1. **The Hook**: Start with drama or a relatable problem
-
-   - ❌ "Today we implemented SSTables"
-   - ✅ "I stared at the failing tests, coffee cold, wondering if I'd bitten off more than I could chew..."
-
-2. **The Struggle**: Show real challenges
-
-   - "For three hours, I fought with Rust's borrow checker like it was my nemesis"
-   - "The segfault appeared out of nowhere - my old CRUD reflexes were useless here"
-
-3. **The AI Save**: Give Claude credit when deserved
-
-   - "Then Claude dropped a knowledge bomb that changed everything"
-   - "I was ready to give up when Claude suggested something I'd never considered"
-
-4. **The Insight**: Share what you learned
-
-   - "That's when it clicked - databases aren't magic, they're just really clever file management!"
-   - "Who knew that 'eventual consistency' meant 'eventually I'd understand this'?"
-
-5. **The Human Touch**: Address AI replacement fears
-   - "Working with Claude proved my job is safe - AI amplifies developers, it doesn't replace them"
-   - "Claude can write code, but only I can decide what code _should_ be written"
-
-### Engagement Techniques
-
-- **Running Jokes**: Develop recurring themes
-
-  - "My CRUD brain vs database reality"
-  - "Coffee count: 7 cups and counting..."
-  - "Rust compiler: 1, Me: 0 (but I'm learning!)"
-
-- **Pop Culture References**: Make it relatable
-
-  - "I felt like Neo seeing the Matrix for the first time"
-  - "This bug was my white whale"
-  - "Claude became my Yoda in the database arts"
-
-- **Visual Breaks**: Use emojis and formatting
-
-  - 🎉 for victories
-  - 😱 for shocking discoveries
-  - 💡 for "aha!" moments
-  - 🤦 for facepalm mistakes
-
-- **Mini-Cliffhangers**: Keep readers scrolling
-
-  - "Little did I know, this simple change would cascade into..."
-  - "The solution was right there, but I wouldn't see it for another hour"
-  - "And that's when everything went sideways..."
-
-- **Relatable Comparisons**:
-  - "Building a database is like assembling IKEA furniture in the dark"
-  - "Debugging this was like finding a specific grain of sand on a beach"
-  - "The skip list finally clicked - it's just a subway system for data!"
-
-## Grounding Humor in Reality
-
-While humor and personality make blogs engaging, always base jokes and examples on actual code and facts:
-
-- **Use real variable names**: If joking about unclear code, use actual variables from the codebase (e.g., `buf` not `xlmr_2`)
-- **Reference real struggles**: Base "confusion moments" on actual compilation errors or test failures
-- **Accurate technical details**: Even when simplifying, ensure technical accuracy (e.g., SSTable = Sorted String Table, not "Super Saiyan Table")
-- **Real code snippets**: When showing "bad" code, base it on actual early attempts or common mistakes
-- **Genuine learning moments**: Share actual "aha!" moments from development, not fictional ones
-
-Examples:
-
-- ✅ "I thought `buf` meant buffer, but Claude asked if I meant Buffy the Vampire Slayer"
-- ❌ "I named a variable `xyzzy_42` and forgot what it meant" (unless this actually happened)
-- ✅ "The compiler gave me 126 errors" (if true)
-- ❌ "The compiler gave me 9000 errors" (unless it actually did)
-
-## Absolute Honesty About Contributions
-
-CRITICAL: Always accurately represent who suggested what idea or solution:
-
-- **Credit the human**: When the human suggests an optimization or finds a bug, they get credit
-- **Credit Claude**: When Claude implements or explains something, Claude gets credit
-- **No role reversal**: Never swap who did what for dramatic effect
-- **Verify with Claude's blog**: Cross-check stories with Claude's perspective for accuracy
-- **True collaboration**: Show the real back-and-forth, not a fictional version
-- **Study collaboration effectiveness**: Accurate records help us understand what makes human-AI partnerships successful
-
-Examples:
-
-- ✅ "I suggested binary search and Claude implemented it"
-- ❌ "Claude suggested binary search" (if the human actually suggested it)
-- ✅ "I noticed the API was confusing, Claude helped refactor it"
-- ❌ "Claude noticed the API issue" (if the human actually noticed it)
-
-The goal is an honest, engaging story - not fiction. Readers should trust that while the tone is fun, the facts are real.
-
-## Why Accuracy Matters for Both Blogs
-
-Maintaining truthful records in both human and Claude blogs is essential because:
-
-- **Research value**: Future teams studying human-AI collaboration need accurate data
-- **Pattern recognition**: We can only identify effective collaboration patterns from true events
-- **Trust building**: Readers rely on our honesty to understand real vs imagined capabilities
-- **Learning opportunity**: Honest mistakes and corrections teach more than fictional successes
-
-## Template Usage
-
-- **Human blog template** (`docs/_posts/blog-post-template.md`): For daily development posts from the human perspective
-- **Claude blog template** (`docs/_claude_blog/blog-post-template.md`): For Claude's pattern-recognition focused posts
-- Templates ensure consistency in structure, metrics, and personality
-- Modify templates as needed but maintain the core personality traits
+- **Human posts**: `/blog/human/day-N-descriptive-slug/`
+- **Claude posts**: `/blog/claude/day-N-descriptive-slug/`
+- **Slug guidelines**:
+  - Should match the content theme, not just the title
+  - Keep concise but descriptive
+  - Use hyphens to separate words
+  - Examples:
+    - `day-1-learning-through-code-review`
+    - `day-2-questions-transform-architecture`
 
 ## Publishing Process
 
-1. Create post using appropriate template
-2. Include actual statistics gathered from commands
-3. Review for accuracy and engagement
-4. Lint with prettier and markdownlint
-5. Submit PR with "blog" label
+1. **Write draft** following templates
+2. **Verify technical accuracy** against codebase
+3. **Cross-check** human and Claude posts for consistency
+   - Same day posts must align on facts
+   - Technical details must match
+   - Timeline of events must be consistent
+4. **Review dialogue** for authenticity
+   - Use exact quotes when possible
+   - Format consistently: `**Me**: question` / `**Claude**: response`
+5. **Ensure proper attribution** throughout
+6. **Run linters** for markdown quality
+7. **Create PR** with clear description
+
+## Using Commit Commentaries for Blog Posts
+
+The commit commentaries serve as a primary source for blog posts:
+
+1. **Gather commentaries from the day's work**:
+
+   ```bash
+   # Find all commits with commentaries from a specific day
+   git log --since="2025-05-27" --until="2025-05-28" --grep="🤖" --pretty=full
+   ```
+
+2. **Extract key patterns and insights**:
+
+   - Stats provide quantitative data
+   - Process descriptions show workflow
+   - Key learnings highlight breakthroughs
+   - Questions count shows human impact
+
+3. **Cross-reference PR summaries** for broader patterns
+
+4. **Use commentaries to ensure accuracy**:
+   - Timeline of events
+   - Who suggested what
+   - Actual iteration count
+   - Real collaboration dynamics
+
+## Remember
+
+Our blog posts serve multiple purposes:
+
+- **Educational**: Show real human-AI collaboration
+- **Historical**: Document actual development process
+- **Research**: Provide data on collaboration patterns
+- **Inspirational**: Encourage others to try this workflow
+
+Keep them accurate, engaging, and true to our actual experience!
