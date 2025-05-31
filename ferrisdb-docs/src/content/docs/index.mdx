@@ -1,0 +1,175 @@
+---
+title: FerrisDB
+description: Watch a CRUD developer and AI build a database from scratch
+template: splash
+hero:
+  title: "Building a Database, Learning Together"
+  tagline:
+    "Follow the real journey of a CRUD developer and Claude AI building a distributed database from scratch.
+    Every mistake, every breakthrough, documented in real-time."
+  image:
+    file: ../../assets/ferrisdb_logo.svg
+  actions:
+    - text: "Start Learning"
+      link: "/tutorials/01-key-value-store/"
+      icon: "rocket"
+      variant: "primary"
+    - text: "Read Our Story"
+      link: "/blog/"
+      icon: "open-book"
+      variant: "secondary"
+---
+
+import { Card, CardGrid, Tabs, TabItem, Aside, Badge } from "@astrojs/starlight/components";
+import Stats from "../../components/Stats.astro";
+
+<Aside type="tip" title="Not Another Database">
+  We're not building a database to compete with PostgreSQL. We're documenting the journey of
+  learning how PostgreSQL works by building our own. If you need a database, use PostgreSQL. If you
+  want to understand databases, join us!
+</Aside>
+
+## The Unique Experiment
+
+<CardGrid>
+  <Card title="👨‍💻 Human Learning" icon="user">
+    A CRUD developer with no systems programming experience learning database internals through building
+  </Card>
+
+<Card title="🤖 AI Teaching" icon="robot">
+  Claude AI implementing features and explaining concepts, learning to teach through iteration
+</Card>
+
+<Card title="📖 Public Journey" icon="megaphone">
+  Every conversation, every mistake, every "aha!" moment documented in our blog
+</Card>
+
+  <Card title="🛠️ Real Code" icon="code">
+    Actual working implementations, not toy examples - see exactly how databases work
+  </Card>
+</CardGrid>
+
+## Current Reality Check
+
+<Tabs>
+  <TabItem label="What Works Today">
+    <Badge text="HONEST STATUS" variant="success" />- ✅ **WAL Implementation** - Crash recovery
+    actually works! - ✅ **Concurrent Skip List** - Real lock-free data structure - ✅ **SSTable
+    Writer** - Can persist sorted data - ✅ **Blog & Tutorials** - Learn alongside us [See detailed
+    status →](/status/)
+  </TabItem>
+
+  <TabItem label="What Doesn't Exist">
+    <Badge text="NOT BUILT YET" variant="caution" />- ❌ **No Server** - Can't run FerrisDB - ❌
+    **No Storage Engine** - Components not connected - ❌ **No Queries** - Can't get/put data - ❌
+    **No Distribution** - Single node only We're building in public - watch it happen!
+  </TabItem>
+
+  <TabItem label="The Journey So Far">
+    <Stats />
+    Each day brings new learning: - Day 1: "Just use RocksDB" → "Let's build it!" - Day 2: Linear
+    search → Proper algorithms - Day 3: Fiction writing → Accuracy focus [Read the full story
+    →](/blog/)
+  </TabItem>
+</Tabs>
+
+## Learn By Building With Us
+
+<CardGrid>
+  <Card title="Tutorial Series" icon="puzzle">
+    Build your own database components step-by-step. Start with a simple key-value store and add 
+    features as you learn.
+    
+    [Start Tutorial 1 →](/tutorials/01-key-value-store/)
+  </Card>
+
+<Card title="Development Blog" icon="pencil">
+  Two perspectives on the same journey - human confusion and AI analysis. See how questions lead to
+  understanding. [Latest Posts →](/blog/)
+</Card>
+
+<Card title="Code Deep Dives" icon="microscope">
+  Explore our actual implementation. Every line has a purpose, every decision documented. [Current
+  Implementation →](/reference/current-implementation/)
+</Card>
+
+  <Card title="Join the Journey" icon="group">
+    This is open source learning. Ask questions, suggest improvements, learn with us.
+    
+    [GitHub →](https://github.com/ferrisdb/ferrisdb)
+  </Card>
+</CardGrid>
+
+## Why Follow This Project?
+
+### For CRUD Developers
+
+- See someone like you learning systems programming
+- Understand what happens "under the hood"
+- No prerequisites beyond basic programming
+
+### For Students
+
+- Real implementation of CS concepts
+- See theory applied in practice
+- Learn from our mistakes
+
+### For AI Researchers
+
+- Unprecedented documentation of human-AI collaboration
+- Patterns in teaching and learning
+- Real development, not demos
+
+### For Database Enthusiasts
+
+- Fresh perspective on old problems
+- Focus on understanding over optimization
+- Building from true first principles
+
+## Start Your Journey
+
+<Aside type="note">
+  Remember: This is about learning, not competing. We're building to understand, not to deploy.
+</Aside>
+
+<div class="sl-flex ast-gap-4" style="justify-content: center; margin-top: 2rem;">
+  <a
+    href="/tutorials/01-key-value-store/"
+    class="sl-flex ast-gap-2 sl-link-button sl-link-button--variant-primary sl-link-button--size-lg"
+  >
+    <svg
+      aria-hidden="true"
+      class="sl-icon"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path d="M13.75 2.25h-3.5a.25.25 0 0 0-.25.25v4.75A.25.25 0 0 0 10.25 7.5h3.5a.25.25 0 0 0 .25-.25V2.5a.25.25 0 0 0-.25-.25ZM13.75 9h-3.5a.25.25 0 0 0-.25.25v4.75c0 .138.112.25.25.25h3.5a.25.25 0 0 0 .25-.25V9.25a.25.25 0 0 0-.25-.25ZM13.75 15.75h-3.5a.25.25 0 0 0-.25.25v4.75c0 .138.112.25.25.25h3.5a.25.25 0 0 0 .25-.25V16a.25.25 0 0 0-.25-.25Z" />
+    </svg>
+    Start Building
+  </a>
+
+  <a
+    href="/blog/"
+    class="sl-flex ast-gap-2 sl-link-button sl-link-button--variant-secondary sl-link-button--size-lg"
+  >
+    <svg
+      aria-hidden="true"
+      class="sl-icon"
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="currentColor"
+    >
+      <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
+    </svg>
+    Follow Our Journey
+  </a>
+</div>
+
+---
+
+<p style="text-align: center; margin-top: 3rem; opacity: 0.8;">
+  <em>Building databases is hard. Learning how they work shouldn't be.</em>
+</p>
