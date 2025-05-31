@@ -345,7 +345,7 @@ Let's follow one of its recommendations:
    # In ferrisdb-tutorials/tutorial-XX-name/
 
    # Extract all Rust code blocks from MDX
-   grep -A 20 '```rust' ../../ferrisdb-docs/src/content/docs/tutorials/XX-name.mdx
+   grep -A 20 '```rust' ../../docs/src/content/docs/tutorials/XX-name.mdx
 
    # Compare with actual implementation
    diff <(cat src/lib.rs) <(extracted_code_from_mdx)
@@ -433,7 +433,7 @@ Let's follow one of its recommendations:
 impl_struct=$(grep -A 10 "pub struct" src/lib.rs)
 
 # Extract struct definition from MDX
-mdx_struct=$(grep -A 10 "pub struct" ../../ferrisdb-docs/src/content/docs/tutorials/01-key-value-store.mdx)
+mdx_struct=$(grep -A 10 "pub struct" ../../docs/src/content/docs/tutorials/01-key-value-store.mdx)
 
 # Compare and highlight differences
 diff <(echo "$impl_struct") <(echo "$mdx_struct") || echo "❌ Struct definitions don't match!"
@@ -441,7 +441,7 @@ diff <(echo "$impl_struct") <(echo "$mdx_struct") || echo "❌ Struct definition
 # Check method signatures
 echo "Verifying method signatures..."
 impl_methods=$(grep "pub fn" src/lib.rs)
-mdx_methods=$(grep "pub fn" ../../ferrisdb-docs/src/content/docs/tutorials/01-key-value-store.mdx)
+mdx_methods=$(grep "pub fn" ../../docs/src/content/docs/tutorials/01-key-value-store.mdx)
 
 echo "Implementation methods:"
 echo "$impl_methods"
@@ -627,12 +627,16 @@ pub struct KeyValueStore {
 
 ##### ❌ Wrong Pattern (Will Break Build)
 
+<!-- prettier-ignore-start -->
 ````mdx
 <TabItem label="Commands">
-  ```bash # This comment breaks MDX parsing cat file.rs # Another comment that corrupts the block
-  cargo test # This also fails ```
+  ```bash # This comment breaks MDX parsing
+  cat file.rs # Another comment that corrupts the block
+  cargo test # This also fails
+  ```
 </TabItem>
 ````
+<!-- prettier-ignore-end -->
 
 ##### ✅ Correct Pattern
 
@@ -735,7 +739,7 @@ More content
 - This breaks MDX parsing because the tag is no longer at the correct scope level
 - The `{/* prettier-ignore */}` comment prevents prettier from reformatting the closing tag
 
-**Always verify** Steps components by running `npm run build` in ferrisdb-docs!
+**Always verify** Steps components by running `npm run build` in docs!
 
 ### Tab Usage Strategy
 
@@ -1443,7 +1447,7 @@ When publishing a new tutorial, update ALL of these locations:
 
 #### 1. Navigation Files
 
-- [ ] **`ferrisdb-docs/astro.config.mjs`**
+- [ ] **`docs/astro.config.mjs`**
   - Add tutorial to the "Learn by Building" section
   - Ensure correct order and nesting
   - Update any "Coming Soon" badges to published status
@@ -1469,11 +1473,11 @@ When publishing a new tutorial, update ALL of these locations:
 
 #### 4. Index and Overview Files
 
-- [ ] **`ferrisdb-docs/src/content/docs/tutorials/index.mdx`**
+- [ ] **`docs/src/content/docs/tutorials/index.mdx`**
   - Update tutorial list
   - Remove any "coming soon" placeholders
   - Add brief description of new tutorial
-- [ ] **`ferrisdb-docs/src/content/docs/index.mdx`** (home page)
+- [ ] **`docs/src/content/docs/index.mdx`** (home page)
   - Update tutorial count if mentioned
   - Update any featured tutorial sections
 
@@ -1529,7 +1533,7 @@ When publishing a new tutorial, update ALL of these locations:
    rg "coming soon.*Tutorial $NUMBER" --type md --type mdx
 
    # Verify navigation is updated
-   grep -n "Tutorial $NUMBER" ferrisdb-docs/astro.config.mjs
+   grep -n "Tutorial $NUMBER" docs/astro.config.mjs
 
    # Check for broken internal links
    # (Use your link checker tool of choice)
@@ -1672,7 +1676,7 @@ Not until Tutorial 7. Build solid foundation first.
   - [RUST-CONCEPTS-TAUGHT.md](RUST-CONCEPTS-TAUGHT.md)
   - [DATABASE-CONCEPTS-TAUGHT.md](DATABASE-CONCEPTS-TAUGHT.md)
   - [LEARNING-PROGRESS.md](LEARNING-PROGRESS.md)
-- **Published Example**: [Tutorial 1: Key-Value Store](/ferrisdb-docs/src/content/docs/tutorials/01-key-value-store.mdx)
+- **Published Example**: [Tutorial 1: Key-Value Store](/docs/src/content/docs/tutorials/01-key-value-store.mdx)
 
 ## Related Guidelines
 
