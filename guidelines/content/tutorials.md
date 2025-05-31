@@ -517,13 +517,17 @@ Before committing tutorial changes:
 
 ## MDX-Specific Guidelines
 
-<Aside type="caution" title="🚨 Most Common MDX Error">
+<Aside type="caution" title="🚨 Most Common MDX Errors">
 
-**Writing `Option<T>` without backticks will break your tutorial!**
+**Top MDX build failures in tutorials:**
 
-MDX interprets `<T>` as an HTML tag. ALWAYS use backticks: `` `Option<T>` ``
+1. **Writing `Option<T>` without backticks** - MDX interprets `<T>` as HTML. Use: `` `Option<T>` ``
 
-This is the #1 cause of MDX build failures in tutorials.
+2. **Inline comments in TabItem code blocks** - Use separate lines for comments in bash blocks inside JSX components
+
+3. **Missing empty lines around Markdown in JSX** - Always add empty lines around code blocks, badges, etc. in TabItem/Card components
+
+These cause 90% of Starlight build failures!
 
 </Aside>
 
@@ -617,6 +621,45 @@ pub struct KeyValueStore {
 - Before closing `</TabItem>` tag
 - Around any other Markdown content inside JSX components
 
+#### 🚨 Inline Comments in Code Blocks
+
+**CRITICAL**: Never use inline comments in bash code blocks inside TabItem components!
+
+##### ❌ Wrong Pattern (Will Break Build)
+
+````mdx
+<TabItem label="Commands">
+  ```bash # This comment breaks MDX parsing cat file.rs # Another comment that corrupts the block
+  cargo test # This also fails ```
+</TabItem>
+````
+
+##### ✅ Correct Pattern
+
+````mdx
+<TabItem label="Commands">
+
+```bash
+# This comment is on its own line
+cat file.rs
+
+# Another comment, properly separated
+cargo test
+
+# This works correctly
+```
+
+</TabItem>
+````
+
+**Why this breaks**: MDX interprets inline comments in code blocks as JSX expressions when inside components, corrupting the entire code block structure.
+
+**Always use**:
+
+- Comments on separate lines in code blocks
+- Empty lines around code blocks in JSX components
+- Proper line separation for all bash commands
+
 ### Bullet Points in Card Components
 
 **CRITICAL**: Bullet points inside Card components require proper line breaks to render correctly.
@@ -641,6 +684,58 @@ pub struct KeyValueStore {
 ```
 
 **Why This Happens**: Without line breaks, MDX treats the content as a single line, collapsing bullet points together.
+
+### Steps Component Requirements
+
+**CRITICAL**: Steps components in Starlight must contain only a single ordered list structure.
+
+#### ✅ Correct Pattern
+
+```mdx
+<Steps>
+1. **First Step**
+   Content for step 1 with proper indentation
+
+2. **Second Step**  
+   Content for step 2
+
+3. **Third Step**
+   Content for step 3
+
+{/* prettier-ignore */}
+</Steps>
+```
+
+#### ❌ Wrong Pattern (Will Break Build)
+
+```mdx
+<Steps>
+
+### Step 1: Heading Format
+
+Content here
+
+### Step 2: Another Heading
+
+More content
+
+</Steps>
+```
+
+**Common Issues**:
+
+- Using `###` headings instead of numbered lists
+- Indenting the closing `</Steps>` tag within a list item (prettier does this automatically!)
+- Including multiple child elements instead of single ordered list
+- Forgetting the `{/* prettier-ignore */}` comment before closing tag
+
+**Why the prettier-ignore comment is required**:
+
+- Prettier automatically indents the `</Steps>` closing tag to match list content
+- This breaks MDX parsing because the tag is no longer at the correct scope level
+- The `{/* prettier-ignore */}` comment prevents prettier from reformatting the closing tag
+
+**Always verify** Steps components by running `npm run build` in ferrisdb-docs!
 
 ### Tab Usage Strategy
 
@@ -743,29 +838,65 @@ ferrisdb-tutorials/
 │   ├── src/
 │   │   ├── lib.rs (final implementation)
 │   │   └── main.rs (if tutorial includes one)
-│   ├── tests/
+│   ├── tests/                        # CI tests these ✅
 │   │   ├── step_01_tests.rs (test each step)
 │   │   ├── step_02_tests.rs
 │   │   ├── step_03_tests.rs
 │   │   ├── integration_tests.rs
-│   │   └── concurrent_tests.rs (if applicable)
+│   │   ├── concurrent_tests.rs (if applicable)
+│   │   └── solutions.rs (runs all solutions)
 │   ├── benches/
 │   │   └── performance.rs (simple benchmarks)
-│   └── exercises/
-│       ├── README.md (challenge descriptions)
-│       ├── challenge_01_delete.rs
-│       ├── challenge_02_ttl.rs
-│       ├── challenge_03_case_insensitive.rs
-│       ├── challenge_04_prefix_scan.rs
-│       └── solutions/
-│           ├── challenge_01_solution.rs
-│           ├── challenge_02_solution.rs
-│           ├── challenge_03_solution.rs
-│           └── challenge_04_solution.rs
-│   └── tests/
-│       ├── exercises.rs (runs all challenges)
-│       └── solutions.rs (runs all solutions)
+│   ├── examples/                     # CI ignores these ❌
+│   │   ├── exercises.rs (manual test runner)
+│   │   └── exercises/
+│   │       ├── README.md (challenge descriptions)
+│   │       ├── challenge_01_delete.rs
+│   │       ├── challenge_02_ttl.rs
+│   │       ├── challenge_03_case_insensitive.rs
+│   │       ├── challenge_04_prefix_scan.rs
+│   │       └── solutions/
+│   │           ├── challenge_01_solution.rs
+│   │           ├── challenge_02_solution.rs
+│   │           ├── challenge_03_solution.rs
+│   │           └── challenge_04_solution.rs
+│   └── scripts/
+│       └── verify-sync.sh (code sync verification)
 ```
+
+### CI-Friendly Structure
+
+**Key Design**: Exercise templates are in `examples/` to avoid CI failures while remaining accessible to students.
+
+#### Directory Purpose
+
+- **`tests/`** - CI tests these automatically ✅
+
+  - Step tests, integration tests, solution tests
+  - Must pass with 100% success rate
+  - No `todo!()` or stub implementations
+
+- **`examples/`** - CI ignores these by default ❌
+  - Exercise templates with `todo!()` for students
+  - Run manually: `cargo test --example exercises`
+  - Students can still run and debug their implementations
+
+#### Student Experience
+
+Students can run all the same commands as before:
+
+```bash
+# Test main implementation
+cargo test --tests
+
+# Test their exercise solutions
+cargo test --example exercises
+
+# Check exercise compilation
+cargo check --example exercises
+```
+
+The structure is transparent to students while preventing CI failures.
 
 ### Exercise Design Guidelines
 
@@ -981,7 +1112,7 @@ Before committing tutorial changes:
 - [ ] Run `cargo clippy --all-targets --all-features -- -D warnings` on **main implementations** and fix ALL warnings
 - [ ] Verify **exercise templates** compile but may have expected warnings (unused variables, etc.)
 - [ ] Run `cargo test --all` to ensure solution tests pass
-- [ ] Run `cargo test --test exercises` to verify exercise templates compile
+- [ ] Run `cargo check --example exercises` to verify exercise templates compile
 - [ ] Run `cargo bench` to ensure benchmarks compile
 - [ ] **CRITICAL: Verify code synchronization** between MDX and implementation:
   - [ ] Extract and compare all code blocks from tutorial
@@ -1215,6 +1346,7 @@ Before publishing any tutorial:
 - [ ] **MDX Formatting**
 
   - [ ] Empty lines around code blocks in TabItem components
+  - [ ] No inline comments in bash code blocks inside TabItem components
   - [ ] Prettier runs without corrupting code
   - [ ] All special characters properly escaped
   - [ ] Component imports are correct

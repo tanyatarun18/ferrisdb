@@ -6,6 +6,24 @@ Welcome to the FerrisDB development guidelines! These documents contain all the 
 
 **IMPORTANT**: See [GOVERNANCE.md](GOVERNANCE.md) for how we maintain these guidelines. It serves as our constitution for information architecture and documentation standards.
 
+## 🚨 Before You Commit
+
+**MANDATORY for ALL contributors**:
+
+### 1. Format ALL markdown/MDX changes:
+
+```bash
+prettier --write "**/*.md" "**/*.mdx"
+```
+
+### 2. Build Starlight if you touched ferrisdb-docs/:
+
+```bash
+cd ferrisdb-docs && npm run build
+```
+
+**Both are as critical as running `cargo fmt` for Rust code. CI will fail if skipped!**
+
 ## Quick Navigation
 
 ### 📝 Development Standards

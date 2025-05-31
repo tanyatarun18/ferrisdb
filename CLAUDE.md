@@ -122,11 +122,14 @@ ferrisdb/
 ## 🛠️ Most Used Commands
 
 ```bash
-# Before committing
+# Before committing (ALL MANDATORY)
 cargo fmt --all
 cargo clippy --all-targets --all-features -- -D warnings
 cargo test --all
-prettier --write "**/*.md"
+prettier --write "**/*.md" "**/*.mdx"  # REQUIRED after ANY markdown changes
+
+# If you modified ferrisdb-docs/ (MANDATORY)
+cd ferrisdb-docs && npm run build  # REQUIRED to verify Starlight builds
 
 # Create PR
 git checkout -b feature/your-feature

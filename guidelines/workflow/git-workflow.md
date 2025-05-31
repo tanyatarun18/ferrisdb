@@ -440,8 +440,15 @@ echo "Running pre-commit checks..."
 cargo fmt --all --check || exit 1
 cargo clippy --all-targets --all-features -- -D warnings || exit 1
 
-# Markdown checks
-prettier --check "**/*.md" || exit 1
+# Markdown and MDX checks (MANDATORY)
+prettier --check "**/*.md" "**/*.mdx" || exit 1
+
+# Starlight build check (if ferrisdb-docs/ was modified)
+if git diff --cached --name-only | grep -q "^ferrisdb-docs/"; then
+  echo "Starlight files modified - running build verification..."
+  cd ferrisdb-docs && npm run build || exit 1
+  cd ..
+fi
 
 echo "Pre-commit checks passed!"
 ```

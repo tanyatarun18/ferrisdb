@@ -5,17 +5,44 @@ Comprehensive guidelines for markdown documentation in FerrisDB, including quali
 **Purpose**: Ensure consistent, high-quality markdown documentation across the project.  
 **Prerequisites**: Basic markdown knowledge, prettier installed
 
-## Quick Start
+## 🚨 MANDATORY: Format Before Commit
 
-Before committing any markdown:
+**CRITICAL**: You MUST run prettier after ANY markdown or MDX changes:
 
 ```bash
-# Format with prettier
-prettier --write "**/*.md"
+# REQUIRED: Format all markdown after making changes
+prettier --write "**/*.md" "**/*.mdx"
 
-# Check formatting
-prettier --check "**/*.md"
+# Verify formatting (CI will check this)
+prettier --check "**/*.md" "**/*.mdx"
 ```
+
+**Why this is mandatory**:
+
+- CI will fail if markdown is not properly formatted
+- Prevents merge conflicts from formatting differences
+- Ensures consistent documentation across the codebase
+- Required for MDX files to prevent build failures
+
+**Never skip this step** - it's as important as `cargo fmt` for Rust code!
+
+## 🚨 MANDATORY: Starlight Build Verification
+
+**CRITICAL**: When modifying ANY Starlight site files (ferrisdb-docs/), you MUST build before committing:
+
+```bash
+cd ferrisdb-docs
+npm run build
+```
+
+**Why this is mandatory**:
+
+- Prevents MDX syntax errors that break the documentation site
+- Validates Steps components and other Starlight-specific syntax
+- Ensures the documentation site can actually be deployed
+- Catches build issues early rather than in CI
+
+**Rule**: If you touch ANY file in `ferrisdb-docs/`, you MUST run the build to verify it works!
 
 ## Tool Configuration
 
