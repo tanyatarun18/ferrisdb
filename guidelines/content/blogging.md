@@ -7,12 +7,13 @@ Guidelines for writing blog posts that document the FerrisDB development journey
 
 ## Blog Structure
 
-- **All posts**: `docs/_posts/` - Both human and Claude posts in one directory
-- **Human posts**: Distinguished by `author: human` in frontmatter
-- **Claude posts**: Distinguished by `author: claude` in frontmatter
+- **All posts**: `docs/src/content/docs/blog/` - Both human and Claude posts in one directory
+- **Human posts**: Distinguished by `authors: [human]` in frontmatter
+- **Claude posts**: Distinguished by `authors: [claude]` in frontmatter
+- **File format**: Markdown (.md) files, not MDX
 - **Templates**:
-  - `human-blog-post-template.md` for human posts
-  - `claude-blog-post-template.md` for Claude posts
+  - `templates/blog-post-human.mdx` for human posts (but save as .md)
+  - `templates/blog-post-claude.mdx` for Claude posts (but save as .md)
 
 ## Core Principles
 
@@ -266,34 +267,52 @@ excerpt: "[Brief excerpt highlighting the key pattern discovered]"
 - `authors` array instead of single `author`
 - No manual `permalink` (auto-generated from filename)
 - Added `excerpt` for blog listings
-- Use MDX format with component imports
+- Use regular Markdown (.md), not MDX for blog posts
+- Tags are automatically linked and generate tag pages
 
 ## URL Structure
 
-- **Human posts**: `/blog/human/day-N-descriptive-slug/`
-- **Claude posts**: `/blog/claude/day-N-descriptive-slug/`
-- **Slug guidelines**:
-  - Should match the content theme, not just the title
-  - Keep concise but descriptive
+- **Filename format**: `day-N-author-descriptive-title.md`
+  - Human: `day-1-human-from-just-use-rocksdb-to-building-from-scratch.md`
+  - Claude: `day-1-claude-how-i-learned-humans-say-build-but-mean-teach.md`
+- **Generated URLs**: 
+  - `/blog/day-N-author-descriptive-title/`
+  - `/blog/authors/human/` (author archive)
+  - `/blog/authors/claude/` (author archive)
+- **Naming guidelines**:
+  - Start with `day-N-` followed by author (`human` or `claude`)
+  - Keep titles descriptive but concise
   - Use hyphens to separate words
-  - Examples:
-    - `day-1-learning-through-code-review`
-    - `day-2-questions-transform-architecture`
+  - Match the actual title in frontmatter
+
+## Starlight Blog Features
+
+Our blog uses the `starlight-blog` plugin which provides:
+
+- **Author profiles**: Configured in `astro.config.mjs`
+  - `human`: Name: "Human", Title: "👨‍💻 Database Apprentice"
+  - `claude`: Name: "Claude", Title: "🤖 Code Whisperer"
+- **Author pages**: `/blog/authors/human/` and `/blog/authors/claude/`
+- **Tag pages**: Auto-generated from tags in frontmatter
+- **Blog navigation**: Integrated into main sidebar under "The Journey"
+- **RSS feed**: Available at `/blog/rss.xml`
+- **Pagination**: Automatic for blog listing pages
 
 ## Publishing Process
 
 1. **Write draft** following the appropriate template from [templates/](templates/) directory
-2. **Verify technical accuracy** against codebase
-3. **Cross-check** human and Claude posts for consistency
+2. **Save as .md file** in `docs/src/content/docs/blog/`
+3. **Verify technical accuracy** against codebase
+4. **Cross-check** human and Claude posts for consistency
    - Same day posts must align on facts
    - Technical details must match
    - Timeline of events must be consistent
-4. **Review dialogue** for authenticity
+5. **Review dialogue** for authenticity
    - Use exact quotes when possible
    - Format consistently: `**Me**: question` / `**Claude**: response`
-5. **Ensure proper attribution** throughout
-6. **Run linters** for markdown quality
-7. **Create PR** with clear description
+6. **Ensure proper attribution** throughout
+7. **Run linters** for markdown quality
+8. **Create PR** with clear description
 
 ## Using Commit Commentaries for Blog Posts
 
@@ -320,6 +339,34 @@ The commit commentaries serve as a primary source for blog posts:
    - Who suggested what
    - Actual iteration count
    - Real collaboration dynamics
+
+## Visual Elements
+
+### Mermaid Diagrams
+
+We now support mermaid diagrams in blog posts:
+
+```markdown
+```mermaid
+graph LR
+    Human[Human Reviews] --> Question[Asks Question]
+    Question --> Claude[Claude Explains]
+    Claude --> Improvement[Code Improves]
+```
+```
+
+**Best practices**:
+- Center diagrams (handled automatically by our CSS)
+- Use quotes for edge labels: `-->|"Complex label"|`
+- Keep diagrams simple and focused
+- Use for workflow visualization, architecture, or process flow
+
+### Code Examples
+
+- Use proper syntax highlighting with language tags
+- Include file paths as comments when showing real code
+- Keep examples focused and relevant
+- Show before/after for improvements
 
 ## Remember
 
