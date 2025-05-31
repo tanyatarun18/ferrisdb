@@ -267,9 +267,9 @@ fn flush_memtable_to_disk(memtable: Arc<MemTable>) {
 </Card>
 
   <Card title="🤷 When Others Might Be Better" icon="question">
-    - **For rapid prototyping**: JavaScript/Python's GC simplicity wins for quick experiments -
-    **For simple CRUD apps**: Garbage collection overhead might be acceptable - **For teams new to
-    systems programming**: Go's simplicity might be more approachable
+    - **For rapid prototyping**: JavaScript/Python's GC simplicity wins for quick experiments
+    - **For simple CRUD apps**: Garbage collection overhead might be acceptable
+    - **For teams new to systems programming**: Go's simplicity might be more approachable
   </Card>
 </CardGrid>
 
@@ -277,8 +277,8 @@ fn flush_memtable_to_disk(memtable: Arc<MemTable>) {
 
 <Tabs>
   <TabItem label="Performance Benefits">
-    - **Memory usage**: 40% less memory than Java equivalent (no GC overhead) - **Latency**:
-    Predictable performance - no GC pause spikes
+    - **Memory usage**: 40% less memory than Java equivalent (no GC overhead)
+    - **Latency**: Predictable performance - no GC pause spikes
   </TabItem>
 
 <TabItem label="Safety Benefits">
@@ -287,8 +287,8 @@ fn flush_memtable_to_disk(memtable: Arc<MemTable>) {
 </TabItem>
 
   <TabItem label="Development Benefits">
-    - **Refactoring confidence**: Ownership system catches breaking changes at compile time -
-    **Documentation**: Types encode sharing contracts, making code self-documenting
+    - **Refactoring confidence**: Ownership system catches breaking changes at compile time
+    - **Documentation**: Types encode sharing contracts, making code self-documenting
   </TabItem>
 </Tabs>
 
