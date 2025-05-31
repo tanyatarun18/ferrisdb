@@ -223,10 +223,12 @@ Example calculation:
 
 ## Template Usage
 
-- **ALWAYS** use `docs/database-concepts/article-template.md`
+- **ALWAYS** use the [Database Concept Template](templates/database-concept.mdx)
+- Template now uses Starlight MDX format with component imports
 - Fill in all sections - never leave template placeholders
 - Include all required metadata in frontmatter
 - Follow exact section structure for consistency
+- Use Starlight components (Card, Tabs, Aside) for enhanced presentation
 
 ## Publishing Process
 
@@ -234,7 +236,7 @@ Example calculation:
 2. Include actual performance measurements where possible
 3. Test all code examples and exercises
 4. Review for technical accuracy with FerrisDB maintainers
-5. Lint with prettier and markdownlint
+5. Format with prettier (`prettier --write "**/*.md"`)
 6. Submit PR with "database-concepts" label
 
 ## Related Guidelines
